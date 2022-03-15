@@ -18,7 +18,6 @@ function useQuery() {
 const Course = () => {
         const {id: courseId} = useParams()
         const {course, langs} = useSelector(state => state.course)
-        // TODO разобарться со стором
         const dispatch = useDispatch()
         const [lang, lesson] = useQuery()
         const [activeLang, setActiveLang] = useState(lang ? parseInt(lang[1]) : 1)

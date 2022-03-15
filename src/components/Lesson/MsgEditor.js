@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Button, Card, FormCheck} from "react-bootstrap";
+import {Button, Card, Form} from "react-bootstrap";
 import {useDispatch, useSelector} from "react-redux";
 import {addChatItem, editChatItem as editChatItemAction} from "../../store/reducers/lessonSlice";
 import ContentEditable from "react-contenteditable";
@@ -23,32 +23,38 @@ const EditButton = ({cmd, arg, name}) => {
 const MsgEditor = () => {
     const {editChatItem} = useSelector(state => state.lesson)
     const [msg, setMsg] = useState(`Type here the next Marq’s message`)
+    const [msgType, setMsgType] = useState('USUAL')
     const [isEmpty, setIsEmpty] = useState(false)
     const dispatch = useDispatch()
 
     useEffect(() => {
-
         if (editChatItem) {
-            console.log(editChatItem)
             setMsg(editChatItem.value)
+            console.log(msgType)
+            setMsgType(editChatItem.messageType)
         }
-
     }, [editChatItem])
 
-    const addMassage = () => {
+    const addMessage = () => {
         if (editChatItem) {
             const chatItem = {
                 id: editChatItem.id,
                 type: 'MESSAGE',
-                value: msg
+                value: msg,
+                messageType: msgType
             }
             dispatch(editChatItemAction(chatItem))
-            setMsg('')
         }
         if ((msg) && (!editChatItem)) {
-            dispatch(addChatItem({id: Date.now(), type: 'MESSAGE', value: msg}))
-            setMsg('')
+            dispatch(addChatItem({
+                id: Date.now(),
+                type: 'MESSAGE',
+                value: msg,
+                messageType: msgType
+            }))
         }
+        setMsg('')
+        setMsgType('USUAL')
     }
 
     const sanitizeConf = {
@@ -74,7 +80,9 @@ const MsgEditor = () => {
         let msgEmpty = (value.length === 0) || (value.replace('<p>', '').replace('</p>').length === 0) || (value == '&nbsp;')
         setIsEmpty(msgEmpty)
     };
-
+    const changeMessageType = (e)=> {
+        setMsgType(e.target.value)
+    }
     return (
         <div className="d-flex flex-column justify-content-end">
             <Card>
@@ -101,12 +109,34 @@ const MsgEditor = () => {
             </Card>
 
             <div className="mt-3 d-flex justify-content-between">
-                <div className={"d-flex"}>
-                    <FormCheck inline type={"radio"} name={`inline`} label={`Usual`} defaultChecked id={'1'}/>
-                    <FormCheck inline id={'2'} type={"radio"} name={`inline`} label={`Vocabulary`}/>
-                </div>
+                <Form className={"d-flex"}>
+
+                    <Form.Check
+                        className={"me-3"}
+                        onChange={changeMessageType}
+                        value={"USUAL"}
+                        id={"USUAL"}
+                        type={"radio"}
+                        label={`Usual`}
+                        name={`inline`}
+                        checked={(msgType == 'USUAL')}
+                    />
+
+                    <Form.Check
+                        onChange={changeMessageType}
+                        type={"radio"}
+                        name={`inline`}
+                        value={"VOCABULARY"}
+                        id={"VOCABULARY"}
+                        checked={(msgType == "VOCABULARY")}
+                        label={`Vocabulary`}
+                    />
+                </Form>
+                <>
+                    {msgType}
+                </>
                 <Button
-                    onClick={addMassage}
+                    onClick={addMessage}
                     variant="primary"
                     className={"justify-self-end"}
                     disabled={isEmpty}

@@ -20,12 +20,14 @@ const LessonEdit = () => {
         {
             id: 1,
             type: 'MESSAGE',
-            value: 'Hello! It is <i>test</i> massage'
+            value: 'Hello! It is <i>test</i> massage',
+            messageType: 'USUAL'
         },
         {
             id: 2,
             type: 'MESSAGE',
-            value: 'Second <i>test</i> massage'
+            value: 'Second <i>test</i> massage',
+            messageType: 'VOCABULARY'
         },
         {
             id: 4,

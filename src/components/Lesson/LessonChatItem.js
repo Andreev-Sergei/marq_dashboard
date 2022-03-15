@@ -51,6 +51,7 @@ const LessonChatItem = ({item}) => {
                 {item.value.split(' ').map(word => getWord(word))}
                 <Button className={"me-3"} onClick={handleRemoveChatItem}>Remove</Button>
                 <Button className={"me-3"} onClick={hendleEditChatItem}>Edit</Button>
+                <p>{item.type == 'MESSAGE' && item.messageType}</p>
             </Card>
         </div>
     );
