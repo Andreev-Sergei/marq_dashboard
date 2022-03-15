@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useParams} from "react-router-dom";
 import {Button, Card, Col, Container, Row} from "react-bootstrap";
 import {fetchLesson} from "../api/lesson";
@@ -15,9 +15,8 @@ const LessonEdit = () => {
     const {id: lessonId} = useParams()
     const dispatch = useDispatch()
     const {board, pCourse, pLang, lessonName} = useSelector(state => state.lesson)
-    const msgWindow = useRef(null)
-
-    const mockBoard =  [
+    const [boardIsLoading, setBoardIsLoading] = useState(true)
+    const mockBoard = [
         {
             id: 1,
             type: 'MESSAGE',
@@ -57,6 +56,8 @@ const LessonEdit = () => {
                     lessonName,
                     board: mockBoard.reverse(),
                 }))
+                setTimeout(()=>setBoardIsLoading(false), 500)
+
                 // await dispatch(setCourseLangs(languages))
 
             } catch (e) {
@@ -84,26 +85,36 @@ const LessonEdit = () => {
                 <Col md={9} className={"d-grid  pe-1 ps-0"}>
                     <Card className={"p-3 d-flex"} style={{flexDirection: "column", justifyContent: 'space-between'}}>
                         <div
-                            className="board"
-                            style={{overflowY: 'scroll', display: 'flex', flexDirection: 'column-reverse',  maxHeight: '50vh', height:'50vh'}}
-                            ref={msgWindow}
+                            className="board pb-3"
+                            style={{
+                                overflowY: 'scroll',
+                                display: 'flex',
+                                flexDirection: 'column-reverse',
+                                maxHeight: '50vh',
+                                height: '50vh'
+                            }}
                         >
+                            {boardIsLoading
+                                ?
+                                <div className="d-flex h-100">
+                                    <Loading/>
+                                </div>
+                                :
 
-                            {board.map(chatItem => (
-                                    (chatItem.type === 'MESSAGE')
-                                        ?
-                                        <LessonChatItem key={chatItem.id} item={chatItem}/>
-                                        :
-                                        <Loading key={chatItem.id}/>// TODO втавить компонент таски
+                                // last item mb-5
+                                board.map(chatItem => (
+                                        (chatItem.type === 'MESSAGE')
+                                            ?
+                                            <LessonChatItem key={chatItem.id} item={chatItem}/>
+                                            : <div key={chatItem.id}><Card className={"my-2 p-2 d-inline-block"}>task</Card></div>
+                                        // <Loading key={chatItem.id}/>// TODO втавить компонент таски
+                                    )
                                 )
-                            )}
 
-                            <div
-                                className={"my-5 p-2 d-inline-block"}
-                            />
+                            }
                         </div>
 
-                        <MsgEditor msgWindow={msgWindow.current}/>
+                        <MsgEditor />
                     </Card>
                 </Col>
                 <Col md={3}
