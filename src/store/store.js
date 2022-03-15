@@ -1,4 +1,4 @@
-import { configureStore } from '@reduxjs/toolkit'
+import {configureStore} from '@reduxjs/toolkit'
 import userSlice from "./user/userSlice";
 import courseSlice from "./course/courseSlice";
 import lessonSlice from "./lesson/lessonSlice";

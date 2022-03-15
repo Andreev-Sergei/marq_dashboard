@@ -6,7 +6,6 @@ import {useSelector} from "react-redux";
 import headerWrapper from "./HeaderWrapper";
 
 
-
 const AppRouter = () => {
     const {isAuth} = useSelector(state => state.user)
     return (

@@ -1,15 +1,5 @@
 import React, {useState} from 'react';
-import {
-    Button,
-    Card, Col,
-    Form,
-    FormCheck,
-    FormControl,
-    InputGroup,
-    OverlayTrigger,
-    Popover, Row,
-    Spinner
-} from "react-bootstrap";
+import {Button, Card, Col, Form, FormControl, InputGroup, OverlayTrigger, Popover, Row} from "react-bootstrap";
 import Loading from "../Loading";
 import Picker from "emoji-mart/dist-modern/components/picker/picker";
 import {Link} from "react-router-dom";

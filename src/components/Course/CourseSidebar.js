@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from 'react';
+import React from 'react';
 import {Accordion, Badge, Card, ListGroup} from "react-bootstrap";
 import {Link} from "react-router-dom";
 

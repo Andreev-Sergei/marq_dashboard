@@ -1,5 +1,5 @@
 import React, {useEffect, useRef} from 'react';
-import {Link, useParams} from "react-router-dom";
+import {useParams} from "react-router-dom";
 import {Button, Card, Col, Container, Row} from "react-bootstrap";
 import {fetchLesson} from "../api/lesson";
 import {useDispatch, useSelector} from "react-redux";

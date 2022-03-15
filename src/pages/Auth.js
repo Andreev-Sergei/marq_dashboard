@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import {useDispatch, useSelector} from "react-redux";
-import {Button, Col, Container, Alert, Form, Row} from "react-bootstrap";
+import {Alert, Button, Col, Container, Form, Row} from "react-bootstrap";
 import {setError, setIsAuth, setUser} from "../store/user/userSlice";
 import logo from '../assets/images/logo.png'
 import {useNavigate} from "react-router-dom";
