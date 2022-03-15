@@ -1,7 +1,7 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Button, Card, FormCheck} from "react-bootstrap";
-import {useDispatch} from "react-redux";
-import {addChatItem} from "../../store/reducers/lessonSlice";
+import {useDispatch, useSelector} from "react-redux";
+import {addChatItem, editChatItem as editChatItemAction} from "../../store/reducers/lessonSlice";
 import ContentEditable from "react-contenteditable";
 import * as sanitizeHtml from 'sanitize-html';
 
@@ -20,14 +20,35 @@ const EditButton = ({cmd, arg, name}) => {
     );
 }
 
-const MsgEditor = ({msgWindow}) => {
+const MsgEditor = () => {
+    const {editChatItem} = useSelector(state => state.lesson)
     const [msg, setMsg] = useState(`Type here the next Marq’s message`)
+    const [isEmpty, setIsEmpty] = useState(false)
     const dispatch = useDispatch()
 
+    useEffect(() => {
+
+        if (editChatItem) {
+            console.log(editChatItem)
+            setMsg(editChatItem.value)
+        }
+
+    }, [editChatItem])
+
     const addMassage = () => {
-        dispatch(addChatItem({id: Date.now(), type: 'MESSAGE', value: msg}))
-        setMsg('')
-        msgWindow.scrollTop = msgWindow.scrollHeight + 80
+        if (editChatItem) {
+            const chatItem = {
+                id: editChatItem.id,
+                type: 'MESSAGE',
+                value: msg
+            }
+            dispatch(editChatItemAction(chatItem))
+            setMsg('')
+        }
+        if ((msg) && (!editChatItem)) {
+            dispatch(addChatItem({id: Date.now(), type: 'MESSAGE', value: msg}))
+            setMsg('')
+        }
     }
 
     const sanitizeConf = {
@@ -50,6 +71,8 @@ const MsgEditor = ({msgWindow}) => {
     const handleChange = evt => {
         const value = evt.target.value
         setMsg(value.replaceAll('&nbsp;', ' '));
+        let msgEmpty = (value.length === 0) || (value.replace('<p>', '').replace('</p>').length === 0) || (value == '&nbsp;')
+        setIsEmpty(msgEmpty)
     };
 
     return (
@@ -86,8 +109,10 @@ const MsgEditor = ({msgWindow}) => {
                     onClick={addMassage}
                     variant="primary"
                     className={"justify-self-end"}
+                    disabled={isEmpty}
                 >
-                    Add message
+
+                    {editChatItem ? 'Edit message' : 'Add message'}
                 </Button>
             </div>
 
