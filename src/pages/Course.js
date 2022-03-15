@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {Col, Container, Row} from "react-bootstrap";
 import CourseSidebar from "../components/Course/CourseSidebar";
 import {useDispatch, useSelector} from "react-redux";
-import {setCourse, setCourseLangs} from "../store/course/courseSlice";
+import {setCourse, setCourseLangs} from "../store/reducers/courseSlice";
 import {useLocation, useParams} from "react-router-dom";
 import {fetchCourse} from "../api/course";
 import CourseInfo from "../components/Course/CourseInfo";

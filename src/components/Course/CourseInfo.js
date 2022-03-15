@@ -12,7 +12,7 @@ import {
 } from "react-bootstrap";
 import {useDispatch, useSelector} from "react-redux";
 import {fetchLangItem} from "../../api/course";
-import {setLangItem} from "../../store/course/courseSlice";
+import {setLangItem} from "../../store/reducers/courseSlice";
 import Picker from "emoji-mart/dist-modern/components/picker/picker";
 import 'emoji-mart/css/emoji-mart.css'
 
@@ -21,6 +21,7 @@ const CourseInfo = ({langId}) => {
     const [loading, setLoading] = useState(false)
     const dispatch = useDispatch()
     const [emoji, setEmoji] = useState({})
+
 
     const popover = (
         <Popover

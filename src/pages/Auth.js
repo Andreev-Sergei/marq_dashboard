@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {Alert, Button, Col, Container, Form, Row} from "react-bootstrap";
-import {setError, setIsAuth, setUser} from "../store/user/userSlice";
+import {setError, setIsAuth, setUser} from "../store/reducers/userSlice";
 import logo from '../assets/images/logo.png'
 import {useNavigate} from "react-router-dom";
 import {COURSES_LIST_ROUTE} from "../routes";

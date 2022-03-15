@@ -32,7 +32,7 @@ export const lessonSlice = createSlice({
         addChatItem: (state, action) => {
             return {
                 ...state,
-                board: [...state.board, action.payload]
+                board: [action.payload,...state.board]
             }
         }
     },

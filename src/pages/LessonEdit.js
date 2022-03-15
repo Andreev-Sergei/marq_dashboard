@@ -3,18 +3,40 @@ import {useParams} from "react-router-dom";
 import {Button, Card, Col, Container, Row} from "react-bootstrap";
 import {fetchLesson} from "../api/lesson";
 import {useDispatch, useSelector} from "react-redux";
-import {setLesson} from "../store/lesson/lessonSlice";
+import {setLesson} from "../store/reducers/lessonSlice";
 import Breadcrumbs from "../components/Lesson/Breadcrumbs";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faShare} from "@fortawesome/free-solid-svg-icons";
 import MsgEditor from "../components/Lesson/MsgEditor";
 import LessonChatItem from "../components/Lesson/LessonChatItem";
+import Loading from "../components/Loading";
 
 const LessonEdit = () => {
     const {id: lessonId} = useParams()
     const dispatch = useDispatch()
     const {board, pCourse, pLang, lessonName} = useSelector(state => state.lesson)
     const msgWindow = useRef(null)
+
+    const mockBoard =  [
+        {
+            id: 1,
+            type: 'MESSAGE',
+            value: 'Hello! It is <i>test</i> massage'
+        },
+        {
+            id: 2,
+            type: 'MESSAGE',
+            value: 'Second <i>test</i> massage'
+        },
+        {
+            id: 4,
+            type: 'TASK',
+            // this format
+            value: 'Hello! It is <i>test</i> massage'
+        }
+
+    ]
+
     useEffect(() => {
         const getLesson = async () => {
             try {
@@ -33,35 +55,10 @@ const LessonEdit = () => {
                     pLangTitle,
                     pLangId,
                     lessonName,
-                    board: [
-                        {
-                            id: 1,
-                            type: 'MESSAGE',
-                            // this format
-                            value: 'Hello! It is <i>test</i> massage',
-                            // or this format
-                            words: [
-                                {type: 1, value: 'Hello!'},
-                                {type: 1, value: 'It!'},
-                                {type: 1, value: 'is'},
-                                {type: 3, value: 'test'},
-                                {type: 1, value: 'massage'}
-                            ]
-                        },
-                        {
-                            id: 2,
-                            type: 'MESSAGE',
-                            value: 'Second <i>test</i> massage',
-                            words: [
-                                {type: 1, value: 'Second'},
-                                {type: 3, value: 'test'},
-                                {type: 1, value: 'massage'}
-                            ]
-                        },
-
-                    ],
+                    board: mockBoard.reverse(),
                 }))
                 // await dispatch(setCourseLangs(languages))
+
             } catch (e) {
 
             }
@@ -70,6 +67,7 @@ const LessonEdit = () => {
     }, [])
 
     const breadcrumbsProps = {lessonName, lessonId, pCourse, pLang}
+
 
     return (
         <Container>
@@ -87,10 +85,18 @@ const LessonEdit = () => {
                     <Card className={"p-3 d-flex"} style={{flexDirection: "column", justifyContent: 'space-between'}}>
                         <div
                             className="board"
-                            style={{overflow: 'scroll', maxHeight: '50vh', height: "100%"}}
+                            style={{overflowY: 'scroll', display: 'flex', flexDirection: 'column-reverse',  maxHeight: '50vh', height:'50vh'}}
                             ref={msgWindow}
                         >
-                            {board.map(msg => <LessonChatItem key={msg.id} item={msg}/>)}
+
+                            {board.map(chatItem => (
+                                    (chatItem.type === 'MESSAGE')
+                                        ?
+                                        <LessonChatItem key={chatItem.id} item={chatItem}/>
+                                        :
+                                        <Loading key={chatItem.id}/>// TODO втавить компонент таски
+                                )
+                            )}
 
                             <div
                                 className={"my-5 p-2 d-inline-block"}

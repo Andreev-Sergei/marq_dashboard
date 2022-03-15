@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {Button, Card, FormCheck} from "react-bootstrap";
 import {useDispatch} from "react-redux";
-import {addChatItem} from "../../store/lesson/lessonSlice";
+import {addChatItem} from "../../store/reducers/lessonSlice";
 import ContentEditable from "react-contenteditable";
 import * as sanitizeHtml from 'sanitize-html';
 
@@ -25,9 +25,9 @@ const MsgEditor = ({msgWindow}) => {
     const dispatch = useDispatch()
 
     const addMassage = () => {
-        dispatch(addChatItem({id: Date.now(), type: 'MASSAGE', value: msg}))
+        dispatch(addChatItem({id: Date.now(), type: 'MESSAGE', value: msg}))
         setMsg('')
-        msgWindow.scrollTop = msgWindow.scrollHeight + 40
+        msgWindow.scrollTop = msgWindow.scrollHeight + 80
     }
 
     const sanitizeConf = {
