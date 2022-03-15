@@ -13,6 +13,7 @@
     "emoji-mart": "^3.0.1",
     "i": "^0.3.7",
     "npm": "^8.5.4",
+    "package-lock.json": "^1.0.0",
     "react": "^17.0.2",
     "react-bootstrap": "^2.2.1",
     "react-bootstrap-icons": "^1.7.2",
