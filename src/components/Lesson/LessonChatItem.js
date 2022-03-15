@@ -1,5 +1,8 @@
 import React from 'react';
-import {Card} from "react-bootstrap";
+import {Card, Button} from "react-bootstrap";
+import {useDispatch, useSelector} from "react-redux";
+import {removeChatItem, setEditChatItem} from "../../store/reducers/lessonSlice";
+
 
 const LessonChatItem = ({item}) => {
     const getWord = (word) => {
@@ -8,7 +11,6 @@ const LessonChatItem = ({item}) => {
 
         if (word.includes('<i>')) {
             str = word.replace("<i>", '').replace("</i>", '')
-            console.log(str)
             return <i
                 key={key_word}
                 className={"me-1 px-1"}
@@ -28,15 +30,27 @@ const LessonChatItem = ({item}) => {
         } else if (word.includes('<small>')) {
             str = word.replace('<small>', '').replace('</small>', '')
             return <em key={key_word} style={{background: "orange", color: 'white', cursor: 'pointer'}}
-                         className={"me-1 my-1"}>{str}</em>
+                       className={"me-1 my-1"}>{str}</em>
 
         } else return <span key={key_word} className={"me-1"}>{word}</span>
     }
+    const {editChatItem} = useSelector(state => state.lesson)
+    const dispatch = useDispatch()
 
+    const isEdit = editChatItem?.id === item.id
+
+    const hendleEditChatItem = () => {
+       dispatch(setEditChatItem(item))
+    }
+    const handleRemoveChatItem = () => {
+        dispatch(removeChatItem(item.id))
+    }
     return (
         <div>
-            <Card className={"my-2 p-2 d-inline-block"}>
+            <Card className={`my-2 p-2 d-inline-block ${isEdit && 'bg-info'}`}>
                 {item.value.split(' ').map(word => getWord(word))}
+                <Button className={"me-3"} onClick={handleRemoveChatItem}>Remove</Button>
+                <Button className={"me-3"} onClick={hendleEditChatItem}>Edit</Button>
             </Card>
         </div>
     );
