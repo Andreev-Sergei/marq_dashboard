@@ -2,6 +2,7 @@ import React from 'react';
 import {Card, Button} from "react-bootstrap";
 import {useDispatch, useSelector} from "react-redux";
 import {removeChatItem, setEditChatItem} from "../../store/reducers/lessonSlice";
+import {Basket, Trash, PencilSquare, VolumeUpFill} from "react-bootstrap-icons";
 
 
 const LessonChatItem = ({item}) => {
@@ -14,14 +15,17 @@ const LessonChatItem = ({item}) => {
             return <i
                 key={key_word}
                 className={"me-1 px-1"}
-                style={{background: "blue", color: 'white', cursor: 'pointer', borderRadius: 4}}
-                onClick={() => {
+                style={{ color: 'blue'}}
+            >
+                {str}
+                <VolumeUpFill
+                    className={"ms-1"}
+                    role={"button"}
+                    onClick={() => {
                     let sound = new SpeechSynthesisUtterance()
                     sound.text = str
                     window.speechSynthesis.speak(sound)
-                }}
-            >
-                {str}
+                }}/>
             </i>
         } else if (word.includes('<b>')) {
             str = word.replace('<b>', '').replace('</b>', '')
@@ -40,8 +44,9 @@ const LessonChatItem = ({item}) => {
     const isEdit = editChatItem?.id === item.id
 
     const hendleEditChatItem = () => {
-       dispatch(setEditChatItem(item))
+        dispatch(setEditChatItem(item))
     }
+
     const handleRemoveChatItem = () => {
         dispatch(removeChatItem(item.id))
     }
@@ -49,10 +54,11 @@ const LessonChatItem = ({item}) => {
         <div>
             <Card className={`my-2 p-2 d-inline-block ${isEdit && 'bg-info'}`}>
                 {item.value.split(' ').map(word => getWord(word))}
-                <Button className={"me-3"} onClick={handleRemoveChatItem}>Remove</Button>
-                <Button className={"me-3"} onClick={hendleEditChatItem}>Edit</Button>
-                <p>{item.type == 'MESSAGE' && item.messageType}</p>
+                <Trash className={"mx-2"} role={"button"} onClick={handleRemoveChatItem}>Remove</Trash>
+                <PencilSquare role={"button"} onClick={hendleEditChatItem}>Edit</PencilSquare>
+
             </Card>
+            <small style={{fontSize: 9, marginLeft: 8}}>{item.type == 'MESSAGE' && item.messageType}</small>
         </div>
     );
 };

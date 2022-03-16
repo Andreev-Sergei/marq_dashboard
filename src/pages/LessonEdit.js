@@ -10,6 +10,8 @@ import {faShare} from "@fortawesome/free-solid-svg-icons";
 import MsgEditor from "../components/Lesson/MsgEditor";
 import LessonChatItem from "../components/Lesson/LessonChatItem";
 import Loading from "../components/Loading";
+import TaskBank from "../components/Lesson/TaskBank";
+import LessonTaskItem from "../components/Lesson/LessonTaskItem";
 
 const LessonEdit = () => {
     const {id: lessonId} = useParams()
@@ -33,6 +35,9 @@ const LessonEdit = () => {
             id: 4,
             type: 'TASK',
             // this format
+            taskType: 'INPUT',
+            typeTitle: 'Input',
+            method: 2,
             value: 'Hello! It is <i>test</i> massage'
         }
 
@@ -58,7 +63,7 @@ const LessonEdit = () => {
                     lessonName,
                     board: mockBoard.reverse(),
                 }))
-                setTimeout(()=>setBoardIsLoading(false), 500)
+                setTimeout(() => setBoardIsLoading(false), 500)
 
                 // await dispatch(setCourseLangs(languages))
 
@@ -70,7 +75,6 @@ const LessonEdit = () => {
     }, [])
 
     const breadcrumbsProps = {lessonName, lessonId, pCourse, pLang}
-
 
     return (
         <Container>
@@ -108,7 +112,8 @@ const LessonEdit = () => {
                                         (chatItem.type === 'MESSAGE')
                                             ?
                                             <LessonChatItem key={chatItem.id} item={chatItem}/>
-                                            : <div key={chatItem.id}><Card className={"my-2 p-2 d-inline-block"}>task</Card></div>
+                                            :
+                                            <LessonTaskItem key={chatItem.id} item={chatItem}/>
                                         // <Loading key={chatItem.id}/>// TODO втавить компонент таски
                                     )
                                 )
@@ -116,15 +121,16 @@ const LessonEdit = () => {
                             }
                         </div>
 
-                        <MsgEditor />
+                        <MsgEditor/>
                     </Card>
                 </Col>
                 <Col md={3}
                      className={"d-flex"}
                      style={{flexDirection: "column", justifyContent: 'space-between'}}
                 >
-                    <Card className={"px-3 py-2"} style={{height: "100%"}}>
+                    <Card className={"px-2 py-2"} style={{height: "100%"}}>
                         <p>Task bank</p>
+                        <TaskBank/>
                     </Card>
                     <Card className={"p-1 mt-3"}/>
                 </Col>

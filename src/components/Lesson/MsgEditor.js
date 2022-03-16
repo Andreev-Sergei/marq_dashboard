@@ -93,6 +93,7 @@ const MsgEditor = () => {
                         <EditButton cmd="italic" arg="jest" name="voice"/>
                         <EditButton cmd="insertHTML" arg='<small>USER</small>&nbsp;' name="user"/>
                         <EditButton cmd="insertHTML" arg="🍏" name="emoji"/>
+                        {/*TODO add emoji picker & functionality*/}
                     </>
                 </Card.Header>
                 <Card.Body className={"m-0 mb-2 p-0"}>
