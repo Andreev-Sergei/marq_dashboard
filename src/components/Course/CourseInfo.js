@@ -60,7 +60,6 @@ const CourseInfo = ({langId}) => {
         }
         fetchLang()
         return () => {
-            console.log('unmaunting')
         }
     }, [langId])
     return (
