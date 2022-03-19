@@ -2,8 +2,7 @@ import React from 'react';
 import {Card} from "react-bootstrap";
 import {useDispatch} from "react-redux";
 import {addChatItem} from "../../store/reducers/lessonSlice";
-
-export const taskBank = [
+ const taskBank = [
     {id: 1, title: 'Input'},
     {id: 2, title: 'insertion'},
     {id: 3, title: 'Matching'},
@@ -24,7 +23,7 @@ const TaskBank = () => {
             typeTitle: element.title,
             taskType: element.title.toUpperCase(),
             value: '',
-            isNew: true
+            isNew: true,
         }))
     }
 

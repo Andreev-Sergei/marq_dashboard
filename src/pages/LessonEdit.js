@@ -34,11 +34,14 @@ const LessonEdit = () => {
         {
             id: 4,
             type: 'TASK',
-            // this format
             taskType: 'INPUT',
             typeTitle: 'Input',
-            method: 2,
-            value: 'Hello! It is <i>test</i> massage'
+            keyboardType: 1,
+            variants: [
+                {id: 1, word: 'собака', right: true},
+                {id: 2, word: 'кошка', right: false}
+            ],
+            value: 'Dog - <i>собака</i>'
         }
 
     ]
