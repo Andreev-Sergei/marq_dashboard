@@ -6,7 +6,7 @@ export const userSlice = createSlice({
         isAuth: true,
         user: {
             email: 'pirogovoe@gmail.com',
-            role: 'TEACHER'
+            role: 'REVIEWER'
         },
         error: null
     },

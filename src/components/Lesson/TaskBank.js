@@ -2,7 +2,8 @@ import React from 'react';
 import {Card} from "react-bootstrap";
 import {useDispatch} from "react-redux";
 import {addChatItem} from "../../store/reducers/lessonSlice";
- const taskBank = [
+import {taskBankArray} from "../../helpers/constants";
+ const taskBankA = [
     {id: 1, title: 'Input'},
     {id: 2, title: 'insertion'},
     {id: 3, title: 'Matching'},
@@ -15,13 +16,12 @@ import {addChatItem} from "../../store/reducers/lessonSlice";
 
 const TaskBank = () => {
     const dispatch = useDispatch()
-    const addTask = (element) => {
-        console.log(element)
+    const addTask = ({constantName, title}) => {
         dispatch(addChatItem({
             id: + Date.now(),
             type: 'TASK',
-            typeTitle: element.title,
-            taskType: element.title.toUpperCase(),
+            typeTitle: title,
+            taskType: constantName,
             value: '',
             isNew: true,
         }))
@@ -29,7 +29,7 @@ const TaskBank = () => {
 
     return (
         <div>
-            {taskBank.map((element:{id:number, title:string}, i:number) => {
+            {taskBankArray.map((element:{id:number, title :string}, i:number) => {
                 return <Card key={'task_'+ element.id}
                              className="task m-1 py-2 text-center"
                              role={"button"}

@@ -12,11 +12,13 @@ import LessonChatItem from "../components/Lesson/LessonChatItem";
 import Loading from "../components/Loading";
 import TaskBank from "../components/Lesson/TaskBank";
 import LessonTaskItem from "../components/Lesson/LessonTaskItem";
+import {Check, CheckSquareFill} from "react-bootstrap-icons";
 
 const LessonEdit = () => {
     const {id: lessonId} = useParams()
     const dispatch = useDispatch()
     const {board, pCourse, pLang, lessonName} = useSelector(state => state.lesson)
+    const {user} = useSelector(state => state.user)
     const [boardIsLoading, setBoardIsLoading] = useState(true)
     const mockBoard = [
         {
@@ -84,10 +86,16 @@ const LessonEdit = () => {
             <Row className={'mt-4 '}>
                 <Col className={"p-2 d-flex justify-content-between "}>
                     <Breadcrumbs style={{margin: 0}} {...breadcrumbsProps}/>
-                    <Button>
-                        <FontAwesomeIcon icon={faShare} className={"me-2"}/>
-                        Submit for review
-                    </Button>
+                    <div>
+                        {user.role === 'REVIEWER' && <Button className={"me-1"} variant={"outline-primary"}>
+                            <Check className={"me-2"}/>
+                            Approve
+                        </Button>}
+                        <Button >
+                            <FontAwesomeIcon icon={faShare} className={"me-2"}/>
+                            Submit for review
+                        </Button>
+                    </div>
                 </Col>
             </Row>
             <Row className={"py-3"} style={{minHeight: '80vh', background: '#fff'}}>
@@ -99,8 +107,7 @@ const LessonEdit = () => {
                                 overflowY: 'scroll',
                                 display: 'flex',
                                 flexDirection: 'column-reverse',
-                                maxHeight: '50vh',
-                                height: '50vh'
+                                height: '600px'
                             }}
                         >
                             {boardIsLoading

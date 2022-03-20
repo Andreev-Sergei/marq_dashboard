@@ -21,6 +21,7 @@ const EditButton = ({cmd, arg, name}) => {
 }
 
 const MsgEditor = () => {
+    // TODO hide emoji bold and user
     const {editChatItem} = useSelector(state => state.lesson)
     const [msg, setMsg] = useState(`Type here the next Marq’s message`)
     const [msgType, setMsgType] = useState('USUAL')
@@ -80,38 +81,42 @@ const MsgEditor = () => {
         let msgEmpty = (value.length === 0) || (value.replace('<p>', '').replace('</p>').length === 0) || (value == '&nbsp;')
         setIsEmpty(msgEmpty)
     };
-    const changeMessageType = (e)=> {
+    const changeMessageType = (e) => {
         setMsgType(e.target.value)
     }
     return (
         <div className="d-flex flex-column justify-content-end">
-            <Card>
-                <Card.Header>
-                    {/*TODO вынести элементы управления в отдельный компонент*/}
-                    <>
-                        <EditButton cmd="bold"/>
-                        <EditButton cmd="italic" arg="jest" name="voice"/>
-                        <EditButton cmd="insertHTML" arg='<small>USER</small>&nbsp;' name="user"/>
-                        <EditButton cmd="insertHTML" arg="🍏" name="emoji"/>
-                        {/*TODO add emoji picker & functionality*/}
-                    </>
-                </Card.Header>
-                <Card.Body className={"m-0 mb-2 p-0"}>
-                    <ContentEditable
-                        className="m-3"
-                        style={{height: 60}}
-                        tagName="div"
-                        onKeyPress={keyPress}
-                        html={msg}
-                        disabled={false}
-                        onChange={handleChange}
-                    />
-                </Card.Body>
-            </Card>
+            {msgType !== 'GIF' ? <Card>
+                    <Card.Header>
+                        {/*TODO вынести элементы управления в отдельный компонент*/}
+
+                        <>
+
+                            {msgType === 'USUAL' && <EditButton cmd="bold"/>}
+                            <EditButton cmd="italic" arg="jest" name="voice"/>
+                            {msgType === 'USUAL' &&
+                                <EditButton cmd="insertHTML" arg='<small>USER</small>&nbsp;' name="user"/>}
+                            {msgType === 'USUAL' && <EditButton cmd="insertHTML" arg="🍏" name="emoji"/>}
+                            {/*TODO add emoji picker & functionality*/}
+                        </>
+                    </Card.Header>
+                    <Card.Body className={"m-0 mb-2 p-0"}>
+                        <ContentEditable
+                            className="m-3"
+                            style={{height: 60}}
+                            tagName="div"
+                            onKeyPress={keyPress}
+                            html={msg}
+                            disabled={false}
+                            onChange={handleChange}
+                        />
+                    </Card.Body>
+                </Card>
+                : <Card>GIF PICKER</Card>
+            }
 
             <div className="mt-3 d-flex justify-content-between">
                 <Form className={"d-flex"}>
-
                     <Form.Check
                         className={"me-3"}
                         onChange={changeMessageType}
@@ -125,6 +130,7 @@ const MsgEditor = () => {
 
                     <Form.Check
                         onChange={changeMessageType}
+                        className={"me-3"}
                         type={"radio"}
                         name={`inline`}
                         value={"VOCABULARY"}
@@ -132,10 +138,17 @@ const MsgEditor = () => {
                         checked={(msgType == "VOCABULARY")}
                         label={`Vocabulary`}
                     />
+                    <Form.Check
+                        onChange={changeMessageType}
+                        type={"radio"}
+                        name={`inline`}
+                        value={"GIF"}
+                        id={"GIF"}
+                        checked={(msgType == "GIF")}
+                        label={`Gif`}
+                    />
                 </Form>
-                <>
-                    {msgType}
-                </>
+
                 <Button
                     onClick={addMessage}
                     variant="primary"
@@ -143,7 +156,7 @@ const MsgEditor = () => {
                     disabled={isEmpty}
                 >
 
-                    {editChatItem ? 'Edit message' : 'Add message'}
+                    {editChatItem ? 'Confirm changes' : 'Add message'}
                 </Button>
             </div>
 
