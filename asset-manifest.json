@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.css": "/marq_dashboard/static/css/main.69c1f995.css",
+    "main.js": "/marq_dashboard/static/js/main.f3cd73ca.js",
+    "static/media/index.cjs": "/marq_dashboard/static/media/index.cd351d7c31d0d3fccf96.cjs",
+    "index.html": "/marq_dashboard/index.html",
+    "main.69c1f995.css.map": "/marq_dashboard/static/css/main.69c1f995.css.map",
+    "main.f3cd73ca.js.map": "/marq_dashboard/static/js/main.f3cd73ca.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.69c1f995.css",
+    "static/js/main.f3cd73ca.js"
+  ]
+}
