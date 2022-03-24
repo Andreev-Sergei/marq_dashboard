@@ -15,17 +15,17 @@ const LessonChatItem = ({item}) => {
             return <i
                 key={key_word}
                 className={"me-1 px-1"}
-                style={{ color: 'blue'}}
+                style={{color: 'blue'}}
             >
                 {str}
                 <VolumeUpFill
                     className={"ms-1"}
                     role={"button"}
                     onClick={() => {
-                    let sound = new SpeechSynthesisUtterance()
-                    sound.text = str
-                    window.speechSynthesis.speak(sound)
-                }}/>
+                        let sound = new SpeechSynthesisUtterance()
+                        sound.text = str
+                        window.speechSynthesis.speak(sound)
+                    }}/>
             </i>
         } else if (word.includes('<b>')) {
             str = word.replace('<b>', '').replace('</b>', '')
@@ -53,10 +53,14 @@ const LessonChatItem = ({item}) => {
     return (
         <div>
             <Card className={`my-2 p-2 d-inline-block ${isEdit && 'bg-info'}`}>
-                {item.value.split(' ').map(word => getWord(word))}
-                <Trash className={"mx-2"} role={"button"} onClick={handleRemoveChatItem}>Remove</Trash>
-                <PencilSquare role={"button"} onClick={hendleEditChatItem}>Edit</PencilSquare>
-
+                        {item.messageType === 'GIF'
+                            ?
+                            <img src={item.value.fixed_height.url}/>
+                            :
+                            item.value.split(' ').map(word => getWord(word))
+                        }
+                        <Trash className={"mx-2"} role={"button"} onClick={handleRemoveChatItem}>Remove</Trash>
+                        <PencilSquare role={"button"} onClick={hendleEditChatItem}>Edit</PencilSquare>
             </Card>
             <small style={{fontSize: 9, marginLeft: 8}}>{item.type == 'MESSAGE' && item.messageType}</small>
         </div>

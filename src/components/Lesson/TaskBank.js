@@ -3,7 +3,8 @@ import {Card} from "react-bootstrap";
 import {useDispatch} from "react-redux";
 import {addChatItem} from "../../store/reducers/lessonSlice";
 import {taskBankArray} from "../../helpers/constants";
- const taskBankA = [
+
+const taskBankA = [
     {id: 1, title: 'Input'},
     {id: 2, title: 'insertion'},
     {id: 3, title: 'Matching'},

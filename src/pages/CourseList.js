@@ -1,4 +1,4 @@
- import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Button, Col, Container, Row} from "react-bootstrap";
 import CourseCard from "../components/CourseList/CourseCard";
 import {fetchCourseList} from "../api/course";

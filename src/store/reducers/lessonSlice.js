@@ -56,10 +56,16 @@ export const lessonSlice = createSlice({
                     return (item.id === action.payload.id) ? action.payload : item
                 })]
             }
+        },
+        cancelMsgEdit: (state) => {
+            return {
+                ...state,
+                editChatItem: null,
+            }
         }
     },
 })
 
-export const {setLesson, addChatItem, removeChatItem, setEditChatItem, editChatItem} = lessonSlice.actions
+export const {setLesson, addChatItem, removeChatItem, setEditChatItem, editChatItem, cancelMsgEdit} = lessonSlice.actions
 
 export default lessonSlice.reducer

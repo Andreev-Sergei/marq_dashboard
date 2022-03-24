@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useParams} from "react-router-dom";
 import {Button, Card, Col, Container, Row} from "react-bootstrap";
 import {fetchLesson} from "../api/lesson";
@@ -12,7 +12,7 @@ import LessonChatItem from "../components/Lesson/LessonChatItem";
 import Loading from "../components/Loading";
 import TaskBank from "../components/Lesson/TaskBank";
 import LessonTaskItem from "../components/Lesson/LessonTaskItem";
-import {Check, CheckSquareFill} from "react-bootstrap-icons";
+import {Check} from "react-bootstrap-icons";
 
 const LessonEdit = () => {
     const {id: lessonId} = useParams()
