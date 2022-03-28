@@ -2,7 +2,7 @@ import React from 'react';
 import {Breadcrumb} from "react-bootstrap";
 import {COURSE_ROUTE, COURSES_LIST_ROUTE} from "../../routes";
 
-const Breadcrumbs = ({pCourse,pLang,lessonId, lessonName}) => {
+const Breadcrumbs = ({pCourse, pLang, lessonId, lessonName}) => {
     return (
         <Breadcrumb className={"px-2 mb-0"}  >
             <Breadcrumb.Item

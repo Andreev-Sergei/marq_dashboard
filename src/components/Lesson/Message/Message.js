@@ -1,11 +1,11 @@
 import React from 'react';
 import {Card, Button} from "react-bootstrap";
 import {useDispatch, useSelector} from "react-redux";
-import {removeChatItem, setEditChatItem} from "../../store/reducers/lessonSlice";
+import {removeChatItem, setEditChatItem} from "../../../store/reducers/lessonSlice";
 import {Basket, Trash, PencilSquare, VolumeUpFill} from "react-bootstrap-icons";
 
 
-const LessonChatItem = ({item}) => {
+const Message = ({item}) => {
     const getWord = (word) => {
         let str
         const key_word = Math.random() // mock
@@ -67,4 +67,4 @@ const LessonChatItem = ({item}) => {
     );
 };
 
-export default LessonChatItem;
+export default Message;

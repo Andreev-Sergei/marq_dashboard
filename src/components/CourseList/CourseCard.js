@@ -10,8 +10,8 @@ const CourseCard = ({course}) => {
         <h3>{course.title}</h3>
         <p className={"text-secondary mb-2"}>{course.total} courses created</p>
         <hr className="mt-1"/>
-        <Link to={course.id.toString()}>
-            <Button variant={"info"} className={"text-white mx-1"}>
+        <Link to={course.id + ''}>
+            <Button className={"text-white mx-1 "}>
                 Continue
             </Button>
         </Link>

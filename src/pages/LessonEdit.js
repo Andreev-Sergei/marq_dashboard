@@ -3,34 +3,34 @@ import {useParams} from "react-router-dom";
 import {Button, Card, Col, Container, Row} from "react-bootstrap";
 import {fetchLesson} from "../api/lesson";
 import {useDispatch, useSelector} from "react-redux";
-import {setLesson} from "../store/reducers/lessonSlice";
+import {setLesson, setReviewed} from "../store/reducers/lessonSlice";
 import Breadcrumbs from "../components/Lesson/Breadcrumbs";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faShare} from "@fortawesome/free-solid-svg-icons";
-import MsgEditor from "../components/Lesson/MsgEditor";
-import LessonChatItem from "../components/Lesson/LessonChatItem";
+import MessageEditor from "../components/Lesson/MessageEditor/MessageEditor";
+import Message from "../components/Lesson/Message/Message";
 import Loading from "../components/Loading";
 import TaskBank from "../components/Lesson/TaskBank";
-import LessonTaskItem from "../components/Lesson/LessonTaskItem";
+import LessonTaskWrapper from "../components/Lesson/Task/Task";
 import {Check} from "react-bootstrap-icons";
 
 const LessonEdit = () => {
     const {id: lessonId} = useParams()
     const dispatch = useDispatch()
-    const {board, pCourse, pLang, lessonName} = useSelector(state => state.lesson)
+    const {board, pCourse, pLang, lessonName, reviewed} = useSelector(state => state.lesson)
     const {user} = useSelector(state => state.user)
     const [boardIsLoading, setBoardIsLoading] = useState(true)
     const mockBoard = [
         {
             id: 1,
             type: 'MESSAGE',
-            value: 'Hello! It is <i>test</i> massage',
+            value: 'Hello! It is <i>test</i> message',
             messageType: 'USUAL'
         },
         {
             id: 2,
             type: 'MESSAGE',
-            value: 'Second <i>test</i> massage',
+            value: 'Second <i>test</i> message',
             messageType: 'VOCABULARY'
         },
         {
@@ -56,7 +56,8 @@ const LessonEdit = () => {
                     pCourseId,
                     pLangTitle,
                     pLangId,
-                    lessonName
+                    lessonName,
+                    review
                 } = await fetchLesson(lessonId)
 
                 await dispatch(setLesson({
@@ -66,6 +67,7 @@ const LessonEdit = () => {
                     pLangTitle,
                     pLangId,
                     lessonName,
+                    review,
                     board: mockBoard.reverse(),
                 }))
                 setTimeout(() => setBoardIsLoading(false), 500)
@@ -87,11 +89,13 @@ const LessonEdit = () => {
                 <Col className={"p-2 d-flex justify-content-between "}>
                     <Breadcrumbs style={{margin: 0}} {...breadcrumbsProps}/>
                     <div>
-                        {user.role === 'REVIEWER' && <Button className={"me-1"} variant={"outline-primary"}>
-                            <Check className={"me-2"}/>
-                            Approve
-                        </Button>}
-                        <Button >
+                        {user.role === 'REVIEWER' &&
+                            <Button className={"me-1"} disabled={reviewed}
+                                    onClick={()=> dispatch(setReviewed())}
+                                    variant={"outline-primary"}>
+                                {!reviewed ? <> <Check className={"me-2"}/> Approve</> : 'Approved'}
+                            </Button>}
+                        <Button>
                             <FontAwesomeIcon icon={faShare} className={"me-2"}/>
                             Submit for review
                         </Button>
@@ -121,9 +125,9 @@ const LessonEdit = () => {
                                 board.map(chatItem => (
                                         (chatItem.type === 'MESSAGE')
                                             ?
-                                            <LessonChatItem key={chatItem.id} item={chatItem}/>
+                                            <Message key={chatItem.id} item={chatItem}/>
                                             :
-                                            <LessonTaskItem key={chatItem.id} item={chatItem}/>
+                                            <LessonTaskWrapper key={chatItem.id} item={chatItem}/>
                                         // <Loading key={chatItem.id}/>// TODO втавить компонент таски
                                     )
                                 )
@@ -131,7 +135,7 @@ const LessonEdit = () => {
                             }
                         </div>
 
-                        <MsgEditor/>
+                        <MessageEditor/>
                     </Card>
                 </Col>
                 <Col md={3}

@@ -21,7 +21,6 @@ export const capitalizeFirstLetter = (string) => {
 
 
 export const variantsConstructor = (activeKeyboardType, previus) => {
-
     let newVariants
     const initialVariants = [
         {id: 1, word: '', right: true},

@@ -3,13 +3,14 @@ import {Nav, Navbar} from "react-bootstrap";
 import {BoxArrowInRight} from 'react-bootstrap-icons';
 import logo from '../assets/images/logo.png'
 import {useSelector} from "react-redux";
+import {COURSES_LIST_ROUTE} from "../routes";
 
 const Header = () => {
         const {isAuth, user} = useSelector(state => state.user)
         if (isAuth) {
             return (
                 <Navbar collapseOnSelect expand="lg" bg="dark" className={"p-2"} variant="dark">
-                    <Navbar.Brand href="#" className={"d-flex justify-content-start align-items-center bi-grid-1x2"}>
+                    <Navbar.Brand href={COURSES_LIST_ROUTE} className={"d-flex justify-content-start align-items-center bi-grid-1x2"}>
                         <img src={logo} alt="" className={"me-1"}/>
                         Marq.host lessons tool
                     </Navbar.Brand>

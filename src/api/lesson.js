@@ -1,3 +1,6 @@
+import axios from "axios";
+import {SERVER_URL} from "../helpers/constants";
+
 export const fetchLesson = async (lessonId) => {
     const data = {
         lessonId: lessonId,
@@ -6,6 +9,7 @@ export const fetchLesson = async (lessonId) => {
         pLangTitle: 'Spanish',
         pLangId: 2,
         lessonName: '¡Yo hablo español!',
+        reviewed: true,
         board: [
             {
                 type: 'MESSAGE',
@@ -13,5 +17,15 @@ export const fetchLesson = async (lessonId) => {
             }
         ]
     }
+    return data
+}
+
+
+export const fetchShortLessonItem = async (id) => {
+    const data = await axios.get(SERVER_URL + `/lesson/${id}`, {
+        params: {
+            short: true
+        }
+    })
     return data
 }

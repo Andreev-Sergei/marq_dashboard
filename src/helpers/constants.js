@@ -1,5 +1,7 @@
 import {forEach} from "react-bootstrap/ElementChildren";
 
+export const SERVER_URL = 'http://localhost:8000/api_v1/core'
+
 export const keyboardTypesForTask = [
     {id: 1, title: 'Choice 1 of 2 variants'},
     {id: 2, title: 'Choice 1 of 4 variants'},
@@ -40,6 +42,11 @@ export const getKeyboardArrayByTaskType = TYPE => {
             saveList = [1,2,3,4,5]
             break
     }
-    console.log(saveList)
     return  keyboardTypesForTask.filter(task => saveList.includes(task.id))
+}
+
+export const msgTypes = {
+    GIF: 'GIF',
+    USUAL: 'USUAL',
+    VOCABULARY: 'VOCABULARY'
 }

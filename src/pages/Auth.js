@@ -16,7 +16,7 @@ const Auth = () => {
         if (isAuth) {
             return navigate(COURSES_LIST_ROUTE);
         }
-    }, );
+    }, []);
 
     const loginClick = () => {
         dispatch(setIsAuth(true))

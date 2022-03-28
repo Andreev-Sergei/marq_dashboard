@@ -1,13 +1,15 @@
 import React from 'react';
 import {Accordion, Badge, Card, ListGroup} from "react-bootstrap";
 import {Link} from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
 
 const CourseSidebar = ({
                            langs,
                            activeLang,
                            activeLesson,
                            setActiveLang,
-                           setActiveLesson
+                           setActiveLesson,
+                           lessons
                        }) => {
 
 
@@ -18,7 +20,7 @@ const CourseSidebar = ({
     return (
         <Card className={"p-2"}>
             <Accordion defaultActiveKey={activeLang}
-                      >
+            >
                 {langs.map((lang) => {
                         return <Accordion.Item
                             style={{border: "none"}}
@@ -29,18 +31,19 @@ const CourseSidebar = ({
                                 <Accordion.Header onClick={() => langClick(lang.id)}>
                                     <span className={"d-flex justify-content-between w-100"}>
                                     <span>{lang.symbol} {lang.title}</span>
-                                        {(lang.lessons.find(x=> x.review) && !(lang.id == activeLang))&& <Badge bg="warning"
-                                               className={"me-2"}
-                                               style={{color: "black"}}
-                                        >
-                                            Review
-                                        </Badge>}
+                                        {(lang.lessons.find(x => x.review) && !(lang.id == activeLang)) &&
+                                            <Badge bg="warning"
+                                                   className={"me-2"}
+                                                   style={{color: "black"}}
+                                            >
+                                                Review
+                                            </Badge>}
                                     </span>
                                 </Accordion.Header>
                             </Link>
                             <Accordion.Body className={"px-0"}>
                                 <ListGroup>
-                                    {lang.lessons.map(lesson => {
+                                    {lessons.filter(lesson => lesson.lang === lang.id).map(lesson => {
                                         return <Link
                                             key={lesson.id}
                                             to={`?lang=${lang.id}&&lesson=${lesson.id}`}

@@ -8,7 +8,8 @@ export const lessonSlice = createSlice({
         pLang: {},
         pCourse: {},
         board: [],
-        editChatItem: null
+        editChatItem: null,
+        reviewed: false
     },
     reducers: {
         setLesson: (state, action) => {
@@ -18,6 +19,7 @@ export const lessonSlice = createSlice({
                 lessonTitle: action.payload.lessonTitle,
                 board: [...action.payload.board],
                 lessonName: action.payload.lessonName,
+                review: action.payload.review,
                 pCourse: {
                     title: action.payload.pCourseTitle,
                     id: action.payload.pCourseId
@@ -34,6 +36,12 @@ export const lessonSlice = createSlice({
             return {
                 ...state,
                 board: [action.payload, ...state.board]
+            }
+        },
+        setReviewed: (state, action) => {
+            return {
+                ...state,
+                reviewed: true
             }
         },
         removeChatItem: (state, action) => {
@@ -66,6 +74,14 @@ export const lessonSlice = createSlice({
     },
 })
 
-export const {setLesson, addChatItem, removeChatItem, setEditChatItem, editChatItem, cancelMsgEdit} = lessonSlice.actions
+export const {
+    setLesson,
+    addChatItem,
+    removeChatItem,
+    setEditChatItem,
+    editChatItem,
+    setReviewed,
+    cancelMsgEdit
+} = lessonSlice.actions
 
 export default lessonSlice.reducer

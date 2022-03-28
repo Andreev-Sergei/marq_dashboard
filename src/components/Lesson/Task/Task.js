@@ -2,11 +2,14 @@ import React, {useEffect, useState} from 'react';
 import {Button, Card, Form, OverlayTrigger, Popover} from "react-bootstrap";
 import ContentEditable from "react-contenteditable";
 import {Code, Front, Trash} from "react-bootstrap-icons";
-import {removeChatItem} from "../../store/reducers/lessonSlice";
+import {removeChatItem} from "../../../store/reducers/lessonSlice";
 import {useDispatch} from "react-redux";
-import {getKeyboardArrayByTaskType, keyboardTypesForTask, taskBank, taskBankArray} from "../../helpers/constants";
-import {variantsConstructor} from "../../helpers";
-import MarchingForm from "./MarchingForm";
+import {getKeyboardArrayByTaskType, keyboardTypesForTask, taskBank, taskBankArray} from "../../../helpers/constants";
+import {variantsConstructor} from "../../../helpers";
+import Matching from "./TaskTypes/Matching";
+import TextArea from "./TaskElements/TextArea";
+import SelectKeyboadType from "./TaskElements/SelectKeyboadType";
+import Variant from "./TaskElements/Variant";
 
 const getWord = (str) => {
     const word = str.match(/<i[^>]*>([^<]+)<\/i>/)
@@ -17,7 +20,7 @@ const getWord = (str) => {
 }
 
 
-const LessonTaskItem = ({item}) => {
+const LessonTaskWrapper = ({item}) => {
     const [msg, setMsg] = useState(item.value || ``)
     const [word, setWord] = useState(item?.variants?.find(variant => variant.right == true)?.word || null)
     const [activeKeyboardType, setActiveKeyboardType] = useState(item.keyboardType || keyboardTypesForTask[0].id)
@@ -67,12 +70,17 @@ const LessonTaskItem = ({item}) => {
     const handleChangeVariant = (variant, value) => {
         if (variant.right) {
             setWord(value)
+        } else if (itemType.constantName === taskBank.NO_ANSWER) {
+            setVariants([...variants.map(
+                    (variantItem) => (variantItem.id === variant.id) ?
+                        {...variantItem, word: value} : variantItem
+                )]
+            )
         } else {
-            setVariants([...variants.map((variantItem, i) => {
-                    return (variantItem.id === variant.id) ?
-                        {...variantItem, word: value}
-                        : variantItem
-                })]
+            setVariants([...variants.map(
+                    (variantItem) => (variantItem.id === variant.id) ?
+                        {...variantItem, word: value} : variantItem
+                )]
             )
         }
         if (!item.isNew) {
@@ -93,6 +101,7 @@ const LessonTaskItem = ({item}) => {
         setItemType(type)
         document.body.click()
     }
+
     const popover = (
         <Popover style={{maxWidth: 338}} id="popover-basic" className={"p-1"}>
             {taskBankArray.filter(x => x.constantName !== itemType.constantName).map(taskType => {
@@ -107,6 +116,7 @@ const LessonTaskItem = ({item}) => {
             })}
         </Popover>
     );
+
     return (
         <div>
             <Card className={`my-2 py-2 px-2 d-inline-block `}
@@ -114,90 +124,60 @@ const LessonTaskItem = ({item}) => {
                 <div className={"d-flex mb-2 py-2 justify-content-between align-items-center"}>
                     <p className={"m-0"}>{itemType.title}</p>
                     <div className="">
-                        <Trash className={"mx-2"} role={"button"} onClick={handleRemoveChatItem}>Remove</Trash>
+
+                        <Trash className={"mx-2"} role={"button"} onClick={handleRemoveChatItem}/>
+
                         <OverlayTrigger
                             rootClose trigger={"click"}
                             placement="bottom"
                             overlay={popover}>
                             <Front role={"button"}></Front>
                         </OverlayTrigger>
+
                     </div>
                 </div>
+
                 <Form.Group className="mb-3" controlId="taskDescription">
                     <Form.Control type="text" value={taskDescription}
                                   onChange={e => handleDescriptionChange(e.target.value)}
                                   placeholder="Task description (optional)"/>
                 </Form.Group>
-                {itemType.constantName !== taskBank.MATCHING && <Card>
-                    <Card.Header className={"px-0"}>
-                        <>
-                            <Code
-                                color={"#0d6efd"}
-                                onMouseDown={evt => {
-                                    evt.preventDefault();
-                                    document.execCommand('italic', false, 'italic');
-                                }}
-                            />
-                        </>
-                    </Card.Header>
-                    <Card.Body className={"m-0 p-0"}>
-                        <ContentEditable
-                            className={"px-1"}
-                            style={{height: 80}}
-                            tagName="div"
-                            onKeyPress={keyPress}
-                            html={msg}
-                            disabled={false}
-                            onChange={handleInputChange}
-                        />
-                    </Card.Body>
 
-                </Card>}
-                {itemType.constantName === taskBank.MATCHING ?  <MarchingForm/> :
+                {itemType.constantName !== taskBank.MATCHING
+                    ?
+                    <TextArea msg={msg}
+                              taskType={itemType.constantName}
+                              keyPress={keyPress}
+                              handleInputChange={handleInputChange}
+                    />
+                    :
+                    <Matching/>
+                }
+                {itemType.constantName !== taskBank.MATCHING &&
                     <div style={{width: '70%'}}>
-                        <div className={"px-0 py-3 d-flex align-content-center"}>
-                            <Form.Select aria-label="Default select example"
-                                         onChange={e => handleChangeKeyboardType(+e.target.value)}
-                                         defaultValue={activeKeyboardType}
-                            >
-                                {getKeyboardArrayByTaskType(itemType.constantName).map(({id, title}) => {
-                                    return <option key={id} value={id}>{title}</option>
-                                })}
-                            </Form.Select>
+                        <SelectKeyboadType activeKeyboardType={activeKeyboardType}
+                                           handleChangeKeyboardType={handleChangeKeyboardType}
+                                           options={getKeyboardArrayByTaskType(itemType.constantName)}
+                        />
+
+                        <div>
+                            {variants?.map((variant) => {
+                                return <Variant variant={variant}
+                                                key={`variant_${variant.id}`}
+                                                taskType={itemType.constantName}
+                                                handleChangeVariant={handleChangeVariant}
+                                                word={word}/>
+
+                            })}
                         </div>
-
-                        {(activeKeyboardType === keyboardTypesForTask[0].id || activeKeyboardType === keyboardTypesForTask[1].id) && itemType.constantName !== taskBank.MATCHING &&
-                            <div>
-                                {variants?.map((variant) => {
-                                    return <Form.Group
-                                        key={`variants_${variant.id}`}
-                                        className="mb-3 d-flex"
-                                        controlId="currectAnswer">
-                                        <Form.Control type="text"
-                                                      disabled={(!word)}
-                                                      value={(variant.right && word) ? word : variant.word}
-                                                      onChange={(e) =>
-                                                          handleChangeVariant(variant, e.target.value)
-                                                      }
-                                        />
-                                        {itemType.constantName !== taskBank.NO_ANSWER &&
-                                            <div className={"d-flex align-content-center align-items-center px-3"}
-                                                 style={{background: '#E9ECEF'}}>
-                                                <Form.Check defaultChecked={variant.right} disabled className={"me-2"}/>
-                                                Correct
-                                            </div>
-                                        }
-                                    </Form.Group>
-
-                                })}
-                            </div>
-                        }
 
                         <div className={"p-1"}>
                             <small>activeKeyboardTypeId = {activeKeyboardType}</small>
                             <hr className={"my-0"}/>
                             <small> {keyboardTypesForTask[activeKeyboardType - 1].title}</small>
                         </div>
+
+
                     </div>
                 }
                 {item.isNew && <Button onClick={() => {
@@ -211,4 +191,4 @@ const LessonTaskItem = ({item}) => {
     );
 };
 
-export default LessonTaskItem;
+export default LessonTaskWrapper;

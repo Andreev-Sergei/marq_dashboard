@@ -24,9 +24,17 @@ export const userSlice = createSlice({
             }
         },
         setError: (state, action)=>{
-            return{
+            let errorObj = null
+
+            if (action.payload){
+                errorObj = {
+                    message: action.payload.response.data.message,
+                    statusCode: action.payload.response.status
+                }
+            }
+            return {
                 ...state,
-                error: action.payload
+                error: errorObj
             }
         }
 

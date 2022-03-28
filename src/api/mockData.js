@@ -46,16 +46,16 @@ const FULL_COURSE_LANGUAGE = {
 }
 
 
-const CHAT_MASSAGE_ITEM = {
+const CHAT_message_ITEM = {
     id: 1,
     type: 'MESSAGE',
-    value: 'Hello! It is <voice>test</voice> massage', // just for react
+    value: 'Hello! It is <voice>test</voice> message', // just for react
     words: [
         {type: 1, value: 'Hello!'},
         {type: 1, value: 'It!'},
         {type: 1, value: 'is'},
         {type: 3, value: 'test'},
-        {type: 1, value: 'massage'}
+        {type: 1, value: 'message'}
     ]
 }
 
@@ -94,5 +94,5 @@ const FULL_LESSON = {
     CourseId: 1,
     LangTitle: 'Spanish',
     LangId: 2,
-    board: [CHAT_MASSAGE_ITEM, CHAT_TASK_ITEM,]
+    board: [CHAT_message_ITEM, CHAT_TASK_ITEM,]
 }

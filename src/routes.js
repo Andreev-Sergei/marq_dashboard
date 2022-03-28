@@ -1,4 +1,4 @@
-import CourseList from "./pages/CourseList";
+import CourseList from "./pages/CourseList/CourseList";
 import Course from "./pages/Course";
 import Auth from "./pages/Auth";
 import LessonEdit from "./pages/LessonEdit";
