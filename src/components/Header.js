@@ -1,23 +1,54 @@
 import React from 'react';
-import {Nav, Navbar} from "react-bootstrap";
+import {Breadcrumb, Col, Nav, Navbar} from "react-bootstrap";
 import {BoxArrowInRight} from 'react-bootstrap-icons';
 import logo from '../assets/images/logo.png'
 import {useSelector} from "react-redux";
-import {COURSES_LIST_ROUTE} from "../routes";
+import {COURSE_ROUTE, COURSES_LIST_ROUTE} from "../routes";
 
-const Header = () => {
+const Header = ({title, ...rest}) => {
         const {isAuth, user} = useSelector(state => state.user)
+        console.log(rest)
+
+
         if (isAuth) {
             return (
                 <Navbar collapseOnSelect expand="lg" bg="dark" className={"p-2"} variant="dark">
-                    <Navbar.Brand href={COURSES_LIST_ROUTE} className={"d-flex justify-content-start align-items-center bi-grid-1x2"}>
+                    <Navbar.Brand href={COURSES_LIST_ROUTE}
+                                  className={"d-flex justify-content-start align-items-center bi-grid-1x2"}>
                         <img src={logo} alt="" className={"me-1"}/>
                         Marq.host lessons tool
                     </Navbar.Brand>
 
                     <Navbar.Toggle aria-controls="responsive-navbar-nav"/>
                     <Navbar.Collapse id="responsive-navbar-nav">
-                        <Nav className="me-auto">
+                        <Nav className=" w-100">
+                                <Breadcrumb className={"px-2 mt-3 d-flex"}>
+                                    <Breadcrumb.Item
+                                        href={COURSES_LIST_ROUTE}
+                                    >
+                                        Course List
+                                    </Breadcrumb.Item>
+
+                                    {rest?.pCourse?.id && <>
+                                        <Breadcrumb.Item
+                                            href={COURSE_ROUTE + rest.pCourse.id.toString()}
+                                        >
+                                            {rest.pCourse.title}
+                                        </Breadcrumb.Item>
+                                        <Breadcrumb.Item
+                                            href={COURSE_ROUTE + rest.pCourse.id.toString() + '?langId=' + rest.pLang.id.toString()}
+                                        >
+                                            {rest.pLang.title}
+                                        </Breadcrumb.Item>
+                                        <Breadcrumb.Item active
+
+                                        >
+                                            {rest.lessonName}
+                                        </Breadcrumb.Item>
+                                    </>
+                                    }
+                                </Breadcrumb>
+
                         </Nav>
                         <Nav>
                             <Nav.Item className={"d-grid"}

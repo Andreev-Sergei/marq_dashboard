@@ -9,7 +9,9 @@ import CourseInfo from "../components/Course/CourseInfo";
 import AddLesson from "../components/Course/AddLesson";
 import ShortEditLesson from "../components/Course/ShortEditLesson";
 import {setError} from "../store/reducers/userSlice";
-import {COURSE_ROUTE, COURSES_LIST_ROUTE} from "../routes";
+import {COURSES_LIST_ROUTE} from "../routes";
+import AddCourse from "../components/Course/addCourse";
+import Header from "../components/Header";
 
 function useQuery() {
     const {search} = useLocation();
@@ -20,10 +22,16 @@ function useQuery() {
 const Course = () => {
         const {id: courseId} = useParams()
         const {course, langs, lessons} = useSelector(state => state.course)
+
+        const {user} = useSelector(state => state.user)
         const dispatch = useDispatch()
         const [lang, lesson] = useQuery()
         const [activeLang, setActiveLang] = useState(lang ? parseInt(lang[1]) : 1)
         const [activeLesson, setActiveLesson] = useState(lesson && parseInt(lesson[1]))
+        const [showModal, setShowModal] = useState(false)
+
+        const handleClose = () => setShowModal(false);
+        const handleShow = () => setShowModal(true);
 
         const sideBarProps = {
             lessons,
@@ -47,12 +55,11 @@ const Course = () => {
                     }))
                     const languages = course.languages
 
-                    const courseLessons =  languages.map((lang) => {
-                       return lang.lessons.map(lesson => {
-                           return {...lesson, lang: lang.id}
-                       })
+                    const courseLessons = languages.map((lang) => {
+                        return lang.lessons.map(lesson => {
+                            return {...lesson, lang: lang.id}
+                        })
                     })
-
                     const margedcourseLessons = [].concat.apply([], courseLessons)
                     dispatch(setCourseLessons(margedcourseLessons))
                     dispatch(setCourseLangs(languages))
@@ -64,40 +71,43 @@ const Course = () => {
         }, [])
 
         return (
-            <Container>
-                <Row>
-                    <Col className={"ps-2 py-0 mt-0 d-flex justify-content-between align-items-center"}>
-                        <Breadcrumb className={"px-2 mt-3 d-flex"} style={{maxWidth: 400}}>
-                            <Breadcrumb.Item
-                                href={COURSES_LIST_ROUTE}
-                            >
-                                Course List
-                            </Breadcrumb.Item>
-                            <Breadcrumb.Item>
-                                {course.title}
-                            </Breadcrumb.Item>
-                        </Breadcrumb>
-                    </Col>
-                    <Col className={" d-flex justify-content-end align-items-center"}>
-                        <Button style={{float: 'right'}}>Create new course (lang)</Button>
-                    </Col>
-                </Row>
-                <Row className={"mt-0"}>
-                    <Col xxl={4} xl={5} md={6}>
-                        <CourseSidebar {...sideBarProps} />
-                    </Col>
-                    <Col xxl={8} xl={7} md={6}>
-                        {!activeLesson ?
-                            <>
-                                <CourseInfo langId={activeLang}/>
-                                <AddLesson langId={activeLang}/>
+            <>
+                <Header title={course.title} />
+
+                <Container>
+                    <Row>
+                        <Col className={"mt-3 d-flex justify-content-end align-items-center"}>
+                            {user.role === 'REVIEWER' && <>
+                                <Button style={{float: 'right'}}
+                                        onClick={handleShow}
+
+                                >
+                                    Create new course (lang)
+                                </Button>
+
+                                <AddCourse showModal={showModal}
+                                           handleClose={handleClose}/>
                             </>
-                            :
-                            <ShortEditLesson activeLesson={activeLesson}/>
-                        }
-                    </Col>
-                </Row>
-            </Container>
+                            }
+                        </Col>
+                    </Row>
+                    <Row className={"mt-0"}>
+                        <Col xxl={4} xl={5} md={6}>
+                            <CourseSidebar {...sideBarProps} />
+                        </Col>
+                        <Col xxl={8} xl={7} md={6}>
+                            {!activeLesson ?
+                                <>
+                                    <CourseInfo langId={activeLang}/>
+                                    <AddLesson langId={activeLang}/>
+                                </>
+                                :
+                                <ShortEditLesson activeLesson={activeLesson}/>
+                            }
+                        </Col>
+                    </Row>
+                </Container>
+            </>
         );
     }
 ;

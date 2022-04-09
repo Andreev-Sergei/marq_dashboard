@@ -21,7 +21,7 @@ const AppRouter = () => {
             <Routes>
                 <Route path={AUTH_ROUTE} element={<Auth/>} exact/>
                 {isAuth && routes.map(({path, Component}) => {
-                    return <Route key={path} path={path} element={headerWrapper(Component)} exact/>
+                    return <Route key={path} path={path} element={<Component/>} exact/>
                 })}
                 <Route path="*" element={<Auth/>}/>
                 {/* 404 page with link to auth */}

@@ -1,6 +1,6 @@
 import {forEach} from "react-bootstrap/ElementChildren";
 
-export const SERVER_URL = 'http://localhost:8000/api_v1/core'
+export const SERVER_URL = process.env.REACT_APP_SERVER_URL + `/api_v1/core`
 
 export const keyboardTypesForTask = [
     {id: 1, title: 'Choice 1 of 2 variants'},

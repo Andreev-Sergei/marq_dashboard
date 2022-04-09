@@ -5,6 +5,7 @@ import ContentEditable from "react-contenteditable";
 import {taskBank} from "../../../../helpers/constants";
 
 const TextArea = ({msg, keyPress, handleInputChange, taskType}) => {
+    //TODO highlited keyboard symbools avalable
     return (
         <Card>
             <Card.Header className={"px-0"}>

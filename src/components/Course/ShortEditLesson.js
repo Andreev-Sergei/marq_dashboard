@@ -114,8 +114,6 @@ const ShortEditLesson = ({activeLesson}) => {
                                                 </Badge>
                                             </Link>}
                             </p>
-
-
                         </Col>
                     </Row>
 

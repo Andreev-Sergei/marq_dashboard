@@ -5,36 +5,31 @@ export const userSlice = createSlice({
     initialState: {
         isAuth: true,
         user: {
-            email: 'pirogovoe@gmail.com',
+            email: '1',
             role: 'REVIEWER'
         },
         error: null
     },
     reducers: {
-        setIsAuth: (state, action) => {
-            return {
-                ...state,
-                isAuth: action.payload
-            }
-        },
+
         setUser: (state,action) => {
             return {
                 ...state,
+                isAuth: true,
                 user: action.payload
             }
         },
-        setError: (state, action)=>{
-            let errorObj = null
-
-            if (action.payload){
-                errorObj = {
-                    message: action.payload.response.data.message,
-                    statusCode: action.payload.response.status
-                }
-            }
+        unsetUser: (state,action) => {
             return {
                 ...state,
-                error: errorObj
+                isAuth: false,
+                user: null
+            }
+        },
+        setError: (state, action)=> {
+            return {
+                ...state,
+                error: action.payload
             }
         }
 
@@ -42,6 +37,6 @@ export const userSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { setIsAuth, setUser, setError } = userSlice.actions
+export const {  setUser, setError } = userSlice.actions
 
 export default userSlice.reducer

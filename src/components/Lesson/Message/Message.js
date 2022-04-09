@@ -6,6 +6,8 @@ import {Basket, Trash, PencilSquare, VolumeUpFill} from "react-bootstrap-icons";
 
 
 const Message = ({item}) => {
+
+
     const getWord = (word) => {
         let str
         const key_word = Math.random() // mock
@@ -14,10 +16,10 @@ const Message = ({item}) => {
             str = word.replace("<i>", '').replace("</i>", '')
             return <i
                 key={key_word}
-                className={"me-1 px-1"}
+                className={`me-1 px-1 ${isEdit && 'bg-primary text-light'}`}
                 style={{color: 'blue'}}
             >
-                {str}
+                {str.replaceAll('&nbsp;', ' ')}
                 <VolumeUpFill
                     className={"ms-1"}
                     role={"button"}
@@ -29,7 +31,7 @@ const Message = ({item}) => {
             </i>
         } else if (word.includes('<b>')) {
             str = word.replace('<b>', '').replace('</b>', '')
-            return <b key={key_word} className={"me-1"}>{str}</b>
+            return <b key={key_word} className={"me-1"}>{str.replaceAll('&nbsp;', ' ')}</b>
 
         } else if (word.includes('<small>')) {
             str = word.replace('<small>', '').replace('</small>', '')
@@ -52,7 +54,7 @@ const Message = ({item}) => {
     }
     return (
         <div>
-            <Card className={`my-2 p-2 d-inline-block ${isEdit && 'bg-info'}`}>
+            <Card className={`my-2 p-2 d-inline-block ${isEdit && 'bg-primary text-white'}`}>
                         {item.messageType === 'GIF'
                             ?
                             <img src={item.value.fixed_height.url}/>

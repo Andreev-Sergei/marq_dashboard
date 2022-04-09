@@ -11,7 +11,6 @@ import Editor from "./MessageEditorElements/Editor";
 import MessageTypeChanger from "./MessageEditorElements/MessageTypeChanger";
 
 
-
 const MessageEditor = () => {
     const {editChatItem} = useSelector(state => state.lesson)
     const [msg, setMsg] = useState(`Type here the next Marq’s message`)

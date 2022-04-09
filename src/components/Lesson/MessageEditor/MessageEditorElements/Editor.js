@@ -3,6 +3,7 @@ import {Card, OverlayTrigger, Popover} from "react-bootstrap";
 import ContentEditable from "react-contenteditable";
 import {msgTypes} from "../../../../helpers/constants";
 import Picker from "emoji-mart/dist-modern/components/picker/picker";
+import styles from './MessageEditor.module.sass'
 
 const EditButton = ({cmd, arg, name}) => {
     return (
@@ -68,9 +69,8 @@ const Editor = ({msgType, keyPress, msg, handleChange, con }) => {
             </Card.Header>
             <Card.Body className={"m-0 mb-2 p-0"}>
                 <ContentEditable
-                    className="m-3"
+                    className={"m-3 " + styles.contentEditable}
                     id={'contetntEditable'}
-                    style={{height: 60}}
                     tagName="div"
                     onKeyPress={keyPress}
                     html={msg}

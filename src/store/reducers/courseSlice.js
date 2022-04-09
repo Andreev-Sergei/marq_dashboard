@@ -21,6 +21,19 @@ export const courseSlice = createSlice({
                 langs: action.payload
             }
         },
+        addLang: (state, action) => {
+            console.log()
+            return {
+                ...state,
+                langs: [...state.langs,
+                    {
+                        id: action.payload.id,
+                        title: action.payload.title,
+                        symbol: action.payload.symbol,
+                        lessons: []
+                    }]
+            }
+        },
         setCourseLessons: (state, action) => {
             return {
                 ...state,
@@ -49,7 +62,7 @@ export const courseSlice = createSlice({
             return {
                 ...state,
                 lessons: [...state.lessons.map(lesson => {
-                  return (lesson.id === action.payload.id)
+                    return (lesson.id === action.payload.id)
                         ? {
                             ...lesson,
                             title: action.payload.lessonName,
@@ -70,7 +83,6 @@ export const courseSlice = createSlice({
                     symbol: action.payload.emoji,
                     lang: action.payload.lang,
                     review: false,
-
                 }]
             }
         }
@@ -78,6 +90,15 @@ export const courseSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const {setCourse, setCourseLangs, setLangItem, editLang, editLesson, addLesson, setCourseLessons} = courseSlice.actions
+export const {
+    setCourse,
+    setCourseLangs,
+    setLangItem,
+    editLang,
+    editLesson,
+    addLesson,
+    addLang,
+    setCourseLessons
+} = courseSlice.actions
 
 export default courseSlice.reducer
