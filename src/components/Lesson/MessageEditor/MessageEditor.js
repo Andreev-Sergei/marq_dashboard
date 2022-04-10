@@ -1,11 +1,9 @@
-import React, {createRef, useEffect, useRef, useState} from 'react';
-import {Button, Card, Form, OverlayTrigger, Popover} from "react-bootstrap";
+import React, {useEffect, useRef, useState} from 'react';
+import {Button} from "react-bootstrap";
 import {useDispatch, useSelector} from "react-redux";
 import {addChatItem, cancelMsgEdit, editChatItem as editChatItemAction} from "../../../store/reducers/lessonSlice";
-import ContentEditable from "react-contenteditable";
 import * as sanitizeHtml from 'sanitize-html';
 import GiphyPicker from "./MessageEditorElements/GiphyPicker";
-import Picker from "emoji-mart/dist-modern/components/picker/picker";
 import {msgTypes} from "../../../helpers/constants";
 import Editor from "./MessageEditorElements/Editor";
 import MessageTypeChanger from "./MessageEditorElements/MessageTypeChanger";

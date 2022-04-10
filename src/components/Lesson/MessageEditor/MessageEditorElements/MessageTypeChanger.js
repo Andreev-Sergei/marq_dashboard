@@ -6,7 +6,7 @@ const MessageTypeChanger = ({msgType, changeMessageType}) => {
     return (
         <Form className={"d-flex"}>
             <Form.Check
-                className={"me-3"}
+                className={"me-2"}
                 onChange={changeMessageType}
                 value={msgTypes.USUAL}
                 id={msgTypes.USUAL}
@@ -18,7 +18,7 @@ const MessageTypeChanger = ({msgType, changeMessageType}) => {
 
             <Form.Check
                 onChange={changeMessageType}
-                className={"me-3"}
+                className={"me-3 ms-1"}
                 type={"radio"}
                 name={`inline`}
                 value={msgTypes.VOCABULARY}
@@ -29,6 +29,7 @@ const MessageTypeChanger = ({msgType, changeMessageType}) => {
             <Form.Check
                 onChange={changeMessageType}
                 type={"radio"}
+                className={"me-3"}
                 name={`inline`}
                 value={msgTypes.GIF}
                 id={msgTypes.GIF}

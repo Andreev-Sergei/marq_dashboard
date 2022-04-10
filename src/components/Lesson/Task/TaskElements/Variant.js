@@ -7,7 +7,7 @@ const Variant = ({variant, word, taskType, handleChangeVariant}) => {
 
     return (
         <Form.Group
-            className="mb-3 d-flex"
+            className="mb-2 d-flex"
             controlId="currectAnswer">
             <Form.Control type="text"
                           disabled={(!word) && taskType !== taskBank.NO_ANSWER && taskType !== taskBank.QUESTION}

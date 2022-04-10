@@ -20,7 +20,8 @@ import {setError} from "../../store/reducers/userSlice";
 import {useDispatch} from "react-redux";
 import {fetchShortLessonItem} from "../../api/lesson";
 import {useForm} from "react-hook-form";
-import {editLang, editLesson} from "../../store/reducers/courseSlice";
+import {editLesson} from "../../store/reducers/courseSlice";
+import LessonService from "../../services/LessonService";
 
 const ShortEditLesson = ({activeLesson}) => {
     const [loading, setLoading] = useState(false)
@@ -51,8 +52,7 @@ const ShortEditLesson = ({activeLesson}) => {
         const fetchShortLesson = async () => {
             try {
                 setLoading(true)
-                const {data: lesson} = await fetchShortLessonItem(activeLesson)
-
+                const {data: lesson} = await LessonService.fetchLesson(activeLesson, true)
 
                 setEmoji({native: lesson.emoji})
                 setLoading(false)

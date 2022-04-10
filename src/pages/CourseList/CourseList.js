@@ -1,21 +1,9 @@
 import React, {useEffect, useState} from 'react';
-import {
-    Alert,
-    Button,
-    Col,
-    Container,
-    Form,
-    FormControl,
-    InputGroup,
-    Modal,
-    Popover,
-    Row
-} from "react-bootstrap";
+import {Alert, Button, Col, Container, Form, FormControl, InputGroup, Modal, Row} from "react-bootstrap";
 import CourseCard from "../../components/CourseList/CourseCard";
 import {addCourse, fetchCourseList} from "../../api/course";
 import {useForm} from "react-hook-form";
 import Picker from "emoji-mart/dist-modern/components/picker/picker";
-import styles from './CourseList.module.sass'
 import {useDispatch, useSelector} from "react-redux";
 import {setError} from "../../store/reducers/userSlice";
 import Header from "../../components/Header";

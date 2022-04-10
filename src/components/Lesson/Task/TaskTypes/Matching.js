@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useState} from 'react';
 import {Form} from "react-bootstrap";
 import {useForm} from "react-hook-form";
 
@@ -10,11 +10,10 @@ const Matching = ({Confirm, initialMatchingData}) => {
         setMatchingData(getValues())
     }
 
-    useEffect(() => console.log(matchingData), [matchingData])
     return (
-        <form onChange={handleChange} className={"px-0 py-3 "}>
+        <form onChange={handleChange} className={"px-0 py-0 "}>
             <Form.Group
-                className="mb-3 d-flex"
+                className="mb-2 d-flex"
                 controlId="currectAnswer">
                 <Form.Control type="text"
                               className={"me-1"}
@@ -28,7 +27,7 @@ const Matching = ({Confirm, initialMatchingData}) => {
                 />
             </Form.Group>
             <Form.Group
-                className="mb-3 d-flex"
+                className="mb-2 d-flex"
                 controlId="currectAnswer">
                 <Form.Control type="text"
                               className={"me-1"}
@@ -42,7 +41,7 @@ const Matching = ({Confirm, initialMatchingData}) => {
                 />
             </Form.Group>
             <Form.Group
-                className="mb-3 d-flex"
+                className="mb-2 d-flex"
                 controlId="currectAnswer">
                 <Form.Control type="text"
                               className={"me-1"}

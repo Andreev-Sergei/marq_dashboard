@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Breadcrumb, Button, Col, Container, Row} from "react-bootstrap";
+import {Button, Col, Container, Row} from "react-bootstrap";
 import CourseSidebar from "../components/Course/CourseSidebar";
 import {useDispatch, useSelector} from "react-redux";
 import {setCourse, setCourseLangs, setCourseLessons} from "../store/reducers/courseSlice";
@@ -9,7 +9,6 @@ import CourseInfo from "../components/Course/CourseInfo";
 import AddLesson from "../components/Course/AddLesson";
 import ShortEditLesson from "../components/Course/ShortEditLesson";
 import {setError} from "../store/reducers/userSlice";
-import {COURSES_LIST_ROUTE} from "../routes";
 import AddCourse from "../components/Course/addCourse";
 import Header from "../components/Header";
 

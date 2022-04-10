@@ -1,5 +1,5 @@
 import React from 'react';
-import {Breadcrumb, Col, Nav, Navbar} from "react-bootstrap";
+import {Breadcrumb, Nav, Navbar} from "react-bootstrap";
 import {BoxArrowInRight} from 'react-bootstrap-icons';
 import logo from '../assets/images/logo.png'
 import {useSelector} from "react-redux";
@@ -7,8 +7,6 @@ import {COURSE_ROUTE, COURSES_LIST_ROUTE} from "../routes";
 
 const Header = ({title, ...rest}) => {
         const {isAuth, user} = useSelector(state => state.user)
-        console.log(rest)
-
 
         if (isAuth) {
             return (

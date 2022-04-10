@@ -1,9 +1,8 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {Link, Route, Routes} from "react-router-dom";
 import {AUTH_ROUTE, routes} from "../routes";
 import Auth from "../pages/Auth";
 import {useDispatch, useSelector} from "react-redux";
-import headerWrapper from "./HeaderWrapper";
 import {Toast} from "react-bootstrap";
 import {setError} from "../store/reducers/userSlice";
 

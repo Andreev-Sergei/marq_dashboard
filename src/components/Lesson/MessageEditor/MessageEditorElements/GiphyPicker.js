@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {Button, Card, Modal} from "react-bootstrap";
 import Picker from "@progresso/react-giphy-picker-https";
 
@@ -8,7 +8,7 @@ const GiphyPicker = ({gif, setGif}) => {
     const handleClose = () => setOpenModal(false)
 
     return (
-        <Card className={"py-2 d-grid"} style={{    alignItems: "center"}}>
+        <Card className={"py-2 d-grid"} style={{alignItems: "center"}}>
             <div  className={"d-flex justify-content-between align-self-stretch align-items-center"}>
                 <div>
 
@@ -18,7 +18,7 @@ const GiphyPicker = ({gif, setGif}) => {
                 </div>
 
 
-                <img height={150}
+                <img height={140}
                      className={"p-2"}
                      src={gif && gif.fixed_height.url}
                      alt=""/>

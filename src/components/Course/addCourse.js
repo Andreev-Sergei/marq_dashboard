@@ -1,16 +1,5 @@
 import React, {useState} from 'react';
-import {
-    Alert,
-    Button,
-    Form,
-    FormCheck,
-    FormControl,
-    InputGroup,
-    Modal,
-    OverlayTrigger,
-    Popover,
-    Spinner
-} from "react-bootstrap";
+import {Alert, Button, Form, FormControl, InputGroup, Modal, Spinner} from "react-bootstrap";
 import Picker from "emoji-mart/dist-modern/components/picker/picker";
 import {useForm} from "react-hook-form";
 import {useDispatch} from "react-redux";

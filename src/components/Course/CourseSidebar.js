@@ -1,7 +1,6 @@
 import React from 'react';
 import {Accordion, Badge, Card, ListGroup} from "react-bootstrap";
 import {Link} from "react-router-dom";
-import {useDispatch, useSelector} from "react-redux";
 
 const CourseSidebar = ({
                            langs,

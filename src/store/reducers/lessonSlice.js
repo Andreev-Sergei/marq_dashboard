@@ -17,7 +17,7 @@ export const lessonSlice = createSlice({
                 ...state,
                 lessonId: action.payload.lessonId,
                 lessonTitle: action.payload.lessonTitle,
-                board: [...action.payload.board],
+                board: [...action.payload.board.reverse()],
                 lessonName: action.payload.lessonName,
                 review: action.payload.review,
                 pCourse: {
