@@ -1,12 +1,19 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Breadcrumb, Nav, Navbar} from "react-bootstrap";
 import {BoxArrowInRight} from 'react-bootstrap-icons';
 import logo from '../assets/images/logo.png'
 import {useSelector} from "react-redux";
 import {COURSE_ROUTE, COURSES_LIST_ROUTE} from "../routes";
 
-const Header = ({title, ...rest}) => {
+const Header = ({title}) => {
         const {isAuth, user} = useSelector(state => state.user)
+        const {board, lessonId, pCourse, pLang, lessonName, reviewed} = useSelector(state => state.lesson)
+
+
+
+        useEffect(()=> {
+            console.log({lessonName, lessonId, pCourse, pLang})
+        }, [lessonId])
 
         if (isAuth) {
             return (
@@ -20,32 +27,32 @@ const Header = ({title, ...rest}) => {
                     <Navbar.Toggle aria-controls="responsive-navbar-nav"/>
                     <Navbar.Collapse id="responsive-navbar-nav">
                         <Nav className=" w-100">
-                                <Breadcrumb className={"px-2 mt-3 d-flex"}>
+                            <Breadcrumb className={"px-2 mt-3 d-flex"}>
+                                <Breadcrumb.Item
+                                    href={COURSES_LIST_ROUTE}
+                                >
+                                    Course List
+                                </Breadcrumb.Item>
+
+                                {pCourse?.id && <>
                                     <Breadcrumb.Item
-                                        href={COURSES_LIST_ROUTE}
+                                        href={COURSE_ROUTE + pCourse.id.toString()}
                                     >
-                                        Course List
+                                        {pCourse.title}
                                     </Breadcrumb.Item>
+                                    <Breadcrumb.Item
+                                        href={COURSE_ROUTE + pCourse.id.toString() + '?langId=' + pLang.id.toString()}
+                                    >
+                                        {pLang.title}
+                                    </Breadcrumb.Item>
+                                    <Breadcrumb.Item active
 
-                                    {rest?.pCourse?.id && <>
-                                        <Breadcrumb.Item
-                                            href={COURSE_ROUTE + rest.pCourse.id.toString()}
-                                        >
-                                            {rest.pCourse.title}
-                                        </Breadcrumb.Item>
-                                        <Breadcrumb.Item
-                                            href={COURSE_ROUTE + rest.pCourse.id.toString() + '?langId=' + rest.pLang.id.toString()}
-                                        >
-                                            {rest.pLang.title}
-                                        </Breadcrumb.Item>
-                                        <Breadcrumb.Item active
-
-                                        >
-                                            {rest.lessonName}
-                                        </Breadcrumb.Item>
-                                    </>
-                                    }
-                                </Breadcrumb>
+                                    >
+                                        {lessonName}
+                                    </Breadcrumb.Item>
+                                </>
+                                }
+                            </Breadcrumb>
 
                         </Nav>
                         <Nav>
