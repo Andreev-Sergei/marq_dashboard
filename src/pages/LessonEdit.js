@@ -1,69 +1,17 @@
 import React, {useEffect, useState} from 'react';
-import {useParams} from "react-router-dom";
 import {Button, Card, Col, Container, Nav, ProgressBar, Row} from "react-bootstrap";
 import {useDispatch, useSelector} from "react-redux";
 import {setLesson, setReviewed} from "../store/reducers/lessonSlice";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faShare} from "@fortawesome/free-solid-svg-icons";
-import MessageEditor from "../components/Lesson/MessageEditor/MessageEditor";
-import Message from "../components/Lesson/Message/Message";
-import Loading from "../components/Loading";
-import TaskBank from "../components/Lesson/TaskBank";
-import LessonTaskWrapper from "../components/Lesson/Task/Task";
 import {Check} from "react-bootstrap-icons";
 import Header from "../components/Header";
 import Trainer from "../components/Lesson/Trainer/Trainer";
+import Homework from "../components/Lesson/Homework/Homework";
+import LessonBody from "../components/Lesson/LessonBody/LessonBody";
 import LessonService from "../services/LessonService";
+import {useParams} from "react-router-dom";
 
-function LessonBody(props: { fullLesson: any, boardIsLoading: boolean, board: any, element: (chatItem) => JSX.Element }) {
-
-
-    return <Row className={"py-3"} style={{minHeight: "70vh", background: "#fff"}}>
-        <Col md={9} className={"d-grid  pe-1 ps-0"}>
-            <Card className={"p-3 d-flex"}
-                  style={{flexDirection: "column", justifyContent: "space-between"}}>
-                <div
-                    className="board pb-3"
-                    style={{
-                        overflowY: "scroll",
-                        display: "flex",
-                        flexDirection: "column-reverse",
-                        height: "550px"
-                    }}
-                >
-                    {props.boardIsLoading
-                        ?
-                        <div className="d-flex h-100">
-                            <Loading/>
-                        </div>
-                        :
-                        // last item mb-5
-                        props.board.map(props.element)
-                    }
-                </div>
-
-                <MessageEditor/>
-            </Card>
-        </Col>
-        <Col md={3}
-             className={"d-flex"}
-             style={{flexDirection: "column", justifyContent: "space-between"}}
-        >
-            <Card className={"px-2 py-2"} style={{height: "100%"}}>
-                <p>Task bank</p>
-                <TaskBank/>
-            </Card>
-            <Card className={"p-3 mt-2"}>
-                <p>Lesson readiness scale {props.fullLesson} </p>
-                <ProgressBar className={"mb-2"} animated variant={"success"}
-                             now={(props.fullLesson * 10 <= 10) ? 15 : props.fullLesson * 10}
-                             label={`${(props.fullLesson / 1.5).toFixed(1)} m`}/>
-                <p className={"text-secondary mb-0 "}>The scale shows how much more material you need to write for the
-                    lesson to be ready. The average lesson should last approximately 12-15 minutes</p>
-            </Card>
-        </Col>
-    </Row>;
-}
 
 const LESSON_TABS = {
     LESSON: 'LESSON',
@@ -73,39 +21,32 @@ const LESSON_TABS = {
 
 const LessonEdit = () => {
     const {id: lessonId} = useParams()
-    const dispatch = useDispatch()
-    const {board, pCourse, pLang, lessonName, reviewed} = useSelector(state => state.lesson)
     const {user} = useSelector(state => state.user)
-    const [boardIsLoading, setBoardIsLoading] = useState(true)
     const [activeTab, setActiveTab] = useState(LESSON_TABS.LESSON)
-
+    const dispatch = useDispatch()
     const [fullLesson, setFullLesson] = useState(10)
+    const {reviewed} = useSelector(state => state.lesson)
+    const [boardIsLoading, setBoardIsLoading] = useState(true)
 
     useEffect(() => {
-        const getLesson = async () => {
+        const getLessonBody = async () => {
             try {
-                const response = await LessonService.fetchLesson(lessonId)
 
-                await dispatch(setLesson(response.data))
-
-                setTimeout(() => setBoardIsLoading(false), 500)
+                setTimeout(async () => {
+                    const response = await LessonService.fetchLesson(lessonId)
+                    await dispatch(setLesson(response.data))
+                    setBoardIsLoading(false)
+                },1000)
             } catch (e) {
 
             }
         }
-
-        getLesson()
+        getLessonBody()
 
     }, [])
-
-    const breadcrumbsProps = {lessonName, lessonId, pCourse, pLang}
-
-    // useEffect(() => {
-    //     setFullLesson(board.filter(item => item.type === 'TASK').length)
-    // }, [board])
     return (
         <>
-            <Header {...breadcrumbsProps}/>
+            <Header/>
             <Container>
                 <Row className={'mt-3'}>
                     <Col className={"px-0 py-2"}>
@@ -144,57 +85,7 @@ const LessonEdit = () => {
                         </div>
                     </Col>
                 </Row>
-                {activeTab === LESSON_TABS.LESSON &&
-                    <Row className={"py-3"} style={{minHeight: "70vh", background: "#fff"}}>
-                        <Col md={9} className={"d-grid  pe-1 ps-0"}>
-                            <Card className={"p-3 d-flex"}
-                                  style={{flexDirection: "column", justifyContent: "space-between"}}>
-                                <div
-                                    className="board pb-3"
-                                    style={{
-                                        overflowY: "scroll",
-                                        display: "flex",
-                                        flexDirection: "column-reverse",
-                                        height: "550px"
-                                    }}
-                                >
-                                    {boardIsLoading
-                                        ?
-                                        <div className="d-flex h-100">
-                                            <Loading/>
-                                        </div>
-                                        : <>{board.map(item =>
-                                            (item.type === 'MESSAGE')
-                                                ? <Message key={item.id} item={item}/>
-                                                : <LessonTaskWrapper key={item.id} item={item}/>
-                                        )}</>
-                                        // last item mb-5
-                                    }
-                                </div>
-
-                                <MessageEditor/>
-                            </Card>
-                        </Col>
-                        <Col md={3}
-                             className={"d-flex"}
-                             style={{flexDirection: "column", justifyContent: "space-between"}}
-                        >
-                            <Card className={"px-2 py-2"} style={{height: "100%"}}>
-                                <p>Task bank</p>
-                                <TaskBank/>
-                            </Card>
-                            <Card className={"p-3 mt-2"}>
-                                <p>Lesson readiness scale {fullLesson} </p>
-                                <ProgressBar className={"mb-2"} animated variant={"success"}
-                                             now={(fullLesson * 10 <= 10) ? 15 : fullLesson * 10}
-                                             label={`${(fullLesson / 1.5).toFixed(1)} m`}/>
-                                <p className={"text-secondary mb-0 "}>The scale shows how much more material you need to
-                                    write for the
-                                    lesson to be ready. The average lesson should last approximately 12-15 minutes</p>
-                            </Card>
-                        </Col>
-                    </Row>
-                }
+                {activeTab === LESSON_TABS.LESSON && <LessonBody fullLesson={fullLesson} boardIsLoading={boardIsLoading}/>}
                 {/*<LessonBody boardIsLoading={boardIsLoading} fullLesson={fullLesson} board={board}*/}
                 {/*            element={chatItem => (*/}
                 {/*                (chatItem.type === 'MESSAGE')*/}
@@ -204,7 +95,7 @@ const LessonEdit = () => {
                 {/*                    <LessonTaskWrapper key={chatItem.id} item={chatItem}/>*/}
                 {/*            )}/>}*/}
                 {activeTab === LESSON_TABS.TRAINER && <Trainer/>}
-                {/*{activeTab === LESSON_TABS.HOMEWORK && <Homework/>}*/}
+                {activeTab === LESSON_TABS.HOMEWORK && <Homework/>}
             </Container>
         </>
     );
