@@ -18,6 +18,7 @@ import Picker from "emoji-mart/dist-modern/components/picker/picker";
 import 'emoji-mart/css/emoji-mart.css'
 import {useForm} from "react-hook-form";
 import {setError} from "../../store/reducers/userSlice";
+import CourseService from "../../services/CourseService";
 
 const CourseInfo = ({langId}) => {
     const {langItem} = useSelector(state => state.course)
@@ -52,22 +53,23 @@ const CourseInfo = ({langId}) => {
     );
 
     const formSubmit = (data) => {
-        setLoadingChanges(true)
-        setTimeout(() => {
+        try {
+            setLoadingChanges(true)
             const lang = { id: langId, title: edited.courseName, symbol: emoji?.native}
-
+            // TODO add api service
             dispatch(editLang(lang))
             setLoadingChanges(false)
             setEdited(null)
-        }, 500)
+        } catch (e) {
 
+        }
     }
 
     useEffect(() => {
         const fetchLang = async () => {
             try {
                 setLoading(true)
-                const {data: lang} = await fetchLangItem(langId)
+                const {data: lang} = await CourseService.fetchLangItem(langId)
                 setEmoji({native: lang.FlagsEmoji})
                 await dispatch(setLangItem(lang))
                 setLoading(false)

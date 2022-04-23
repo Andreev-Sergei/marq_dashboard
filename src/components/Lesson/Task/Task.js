@@ -1,14 +1,14 @@
 import React, {useEffect, useState} from 'react';
 import {Button, Card, Form, OverlayTrigger, Popover} from "react-bootstrap";
 import {Front, Trash} from "react-bootstrap-icons";
-import {removeChatItem} from "../../../store/reducers/lessonSlice";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {getKeyboardArrayByTaskType, keyboardTypesForTask, taskBank, taskBankArray} from "../../../helpers/constants";
 import {variantsConstructor} from "../../../helpers";
 import Matching from "./TaskTypes/Matching";
 import TextArea from "./TaskElements/TextArea";
 import SelectKeyboadType from "./TaskElements/SelectKeyboadType";
 import Variant from "./TaskElements/Variant";
+import TaskService from "../../../services/LessonServices/TaskService";
 
 const getWord = (str) => {
     const word = str.match(/<i[^>]*>([^<]+)<\/i>/)
@@ -19,16 +19,16 @@ const getWord = (str) => {
 }
 
 
-const LessonTaskWrapper = ({item}) => {
+const LessonTaskWrapper = ({item, blockId, isHomeWork}) => {
     const [msg, setMsg] = useState(item.value || ``)
     const [word, setWord] = useState(item?.variants?.find(variant => variant.right == true)?.word || null)
     const [activeKeyboardType, setActiveKeyboardType] = useState(item.keyboardType || keyboardTypesForTask[0].id)
     const [variants, setVariants] = useState(item.variants || variantsConstructor(activeKeyboardType))
     const [edit, setEdit] = useState(false)
     const [itemType, setItemType] = useState({title: item.typeTitle, constantName: item.taskType})
+    const {board} = useSelector(state=> state.lesson)
     const [taskDescription, setTaskDescription] = useState(item.description || '')
     const dispatch = useDispatch()
-
     const keyPress = (event) => {
         if (event.charCode === 13) {
             event.preventDefault()
@@ -42,7 +42,10 @@ const LessonTaskWrapper = ({item}) => {
         }
     };
     const handleRemoveChatItem = () => {
-        dispatch(removeChatItem(item.id))
+        if (isHomeWork) {
+            return console.log('delte from homework')
+        }
+        dispatch(TaskService.removeTask(board.find(b=> b.blockId === blockId)))
         if (!item.isNew) {
             setEdit(true)
         }
@@ -98,7 +101,24 @@ const LessonTaskWrapper = ({item}) => {
             setEdit(true)
         }
         setItemType(type)
+
         document.body.click()
+    }
+    useEffect(() => {
+        if (isHomeWork) {
+            setItemType({title: item.typeTitle, constantName: item.taskType})
+            setActiveKeyboardType(item.keyboardType)
+            setVariants(variantsConstructor(+item.keyboardType, variants))
+        }
+    }, [item.taskType, item.keyboardType])
+
+    const handleChangeTask = async () => {
+        if (isHomeWork) {
+            return console.log('changed from homework')
+        }
+        const newTask = await TaskService.editTask(item, blockId)
+        console.log(newTask)
+        setEdit(false)
     }
 
     const popover = (
@@ -117,47 +137,50 @@ const LessonTaskWrapper = ({item}) => {
     );
 
     return (
-        <div>
-            <Card className={`my-1 py-2 px-2 d-inline-block `}
-                  style={{width: 450, background: '#F7F7F7'}}>
-                <div className={"d-flex mb-2 py-2 justify-content-between align-items-center"}>
-                    <p className={"m-0"}>{itemType.title}</p>
-                    <div className="">
-                        <Trash className={"mx-2"} role={"button"} onClick={handleRemoveChatItem}/>
-                        <OverlayTrigger
-                            rootClose trigger={"click"}
-                            placement="bottom"
-                            overlay={popover}>
-                            <Front role={"button"}></Front>
-                        </OverlayTrigger>
+        <div style={{width: 450}} draggable>
+            <Card className={`my-1 py-2 px-2 d-grid`}
+                  style={{background: '#F7F7F7', width: 450}}>
+                <div>
+                    <div className={"d-flex mb-1 py-1 justify-content-between align-items-center"}>
+                        <p className={"m-0"}>{itemType.title}</p>
+                        <div className="">
+                            <Trash className={"mx-2"} role={"button"} onClick={handleRemoveChatItem}/>
+                            {!isHomeWork && <OverlayTrigger
+                                rootClose trigger={"click"}
+                                placement="bottom"
+                                overlay={popover}>
+                                <Front role={"button"}></Front>
+                            </OverlayTrigger>}
 
+                        </div>
                     </div>
-                </div>
 
-                <Form.Group className="mb-2" controlId="taskDescription">
-                    <Form.Control type="text" value={taskDescription}
-                                  onChange={e => handleDescriptionChange(e.target.value)}
-                                  placeholder="Task description (optional)"/>
-                </Form.Group>
+                    <Form.Group className="mb-1" controlId="taskDescription">
+                        <Form.Control type="text" value={taskDescription}
+                                      onChange={e => handleDescriptionChange(e.target.value)}
+                                      placeholder="Task description (optional)"/>
+                    </Form.Group>
 
-                {itemType.constantName !== taskBank.MATCHING
-                    ?
-                    <TextArea msg={msg}
-                              taskType={itemType.constantName}
-                              keyPress={keyPress}
-                              handleInputChange={handleInputChange}
-                    />
-                    :
-                    <Matching/>
-                }
-                {itemType.constantName !== taskBank.MATCHING &&
-                    <div style={{width: '70%'}}>
-                        <SelectKeyboadType activeKeyboardType={activeKeyboardType}
-                                           handleChangeKeyboardType={handleChangeKeyboardType}
-                                           options={getKeyboardArrayByTaskType(itemType.constantName)}
+                    {itemType.constantName !== taskBank.MATCHING
+                        ?
+                        <TextArea msg={msg}
+                                  taskType={itemType.constantName}
+                                  keyPress={keyPress}
+                                  handleInputChange={handleInputChange}
                         />
+                        :
+                        <Matching/>
+                    }
+                </div>
+                {itemType.constantName !== taskBank.MATCHING &&
+                    <div style={{width: '100%'}}>
+                        {!isHomeWork && <SelectKeyboadType activeKeyboardType={activeKeyboardType}
+                                                           handleChangeKeyboardType={handleChangeKeyboardType}
+                                                           options={getKeyboardArrayByTaskType(itemType.constantName)}
+                        />}
 
                         <div>
+
                             {variants?.map((variant) => {
                                 return <Variant variant={variant}
                                                 key={`variant_${variant.id}`}
@@ -173,15 +196,9 @@ const LessonTaskWrapper = ({item}) => {
                         {/*    <hr className={"my-0"}/>*/}
                         {/*    <small> {keyboardTypesForTask[activeKeyboardType - 1].title}</small>*/}
                         {/*</div>*/}
-
                     </div>
                 }
-                {item.isNew && <Button onClick={() => {
-                    console.log(item)
-                }} size={"sm"} className={"py-1"}>Save</Button>}
-                {edit && <Button onClick={() => {
-                    console.log(item)
-                }} size={"sm"} className={"py-1"}>Confirm</Button>}
+                {edit && <Button onClick={handleChangeTask}  size={"sm"}  className={"py-1"}> Confirm </Button>}
             </Card>
         </div>
     );

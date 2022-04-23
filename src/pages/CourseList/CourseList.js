@@ -7,6 +7,8 @@ import Picker from "emoji-mart/dist-modern/components/picker/picker";
 import {useDispatch, useSelector} from "react-redux";
 import {setError} from "../../store/reducers/userSlice";
 import Header from "../../components/Header";
+import CourseService from "../../services/CourseService";
+import {USER_ROLE} from "../../helpers/constants";
 
 const CourseList = () => {
     const {user} = useSelector(state => state.user)
@@ -20,12 +22,11 @@ const CourseList = () => {
     const dispatch = useDispatch()
 
     const handleAddCourse = async ({title}) => {
-        const {data: newCourse} = await addCourse({
+        const {data: newCourse} = await CourseService.addCourse({
             symbol: emoji.native,
             title: title,
             total: 0
         })
-        console.log(newCourse)
         setCourseList(prevState => [...prevState, newCourse])
         handleClose()
         setEmoji({})
@@ -35,7 +36,7 @@ const CourseList = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const {data} = await fetchCourseList()
+                const {data} = await CourseService.fetchCourseList()
                 await setCourseList(data)
             } catch (e) {
                 dispatch(setError(e))
@@ -51,20 +52,13 @@ const CourseList = () => {
                         <h2>Courses list</h2>
                     </Col>
                     <Col className={"d-flex justify-content-end"}>
-                        {user.role === "REVIEWER" &&
-                            <Button size={"sm"} onClick={handleShow} className={"px-3"}>
-                                Creat new
-                            </Button>
+                        {user.role === USER_ROLE.REVIEWER &&
+                            <Button size={"sm"} onClick={handleShow} className={"px-3"}>Creat new</Button>
                         }
                     </Col>
                 </Row>
                 <Row>
-                    <Col className={"d-grid mb-5 pb-5"}
-                         style={{
-                             gridTemplateColumns: '1fr 1fr',
-                             gridGap: 25
-                         }}
-                    >
+                    <Col className={"d-grid mb-5 pb-5"} style={{ gridTemplateColumns: '1fr 1fr', gridGap: 25 }} >
                         {courseList.map((course, index) => {
                             return <CourseCard key={index} course={course}/>
                         })}
@@ -76,7 +70,6 @@ const CourseList = () => {
                             <Modal.Title>New course</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
-
                             <InputGroup className="mb-3">
                                 <InputGroup.Text id="inputGroup-sizing-default">Course name</InputGroup.Text>
                                 <FormControl
@@ -95,9 +88,7 @@ const CourseList = () => {
                                     autoComplete={'off'}
                                     onChange={() => null}
                                     style={{background: "white"}}
-
                                     onFocus={() => setPicker(true)}
-
                                     defaultValue={emoji.native}
                                 />
 

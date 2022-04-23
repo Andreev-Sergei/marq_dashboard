@@ -3,6 +3,8 @@ import {Card, Col, Nav, Row, Tab, TabContainer} from "react-bootstrap";
 import {getKeyboardArrayByTaskType, keyboardTypesForTask, taskBank} from "../../../helpers/constants";
 import ExerciseSettings from "./ExerciseSettings";
 import Board from "./Board";
+import {useDispatch, useSelector} from "react-redux";
+import {setExercise} from "../../../store/reducers/HomeworkSlice";
 
 const Exercises = [
     'Exercise #1',
@@ -13,22 +15,30 @@ const Exercises = [
 
 const Homework = () => {
     const [ex, setEx] = useState(1)
-    const [activeExercise, setActiveExercise] = useState(null)
+    const {exercise: exe} = useSelector(state => state.homework)
+    const dispatch = useDispatch()
 
-    useMemo(() => {
-        const getExercise = () => {
-            const exi = {
-                id: ex,
-                name: 'Перевод',
-                section: 'Лексика',
-                description: 'Помнишь, как это будет по-испански?',
-                typeOfTask: taskBank.INSERTION,
-                keyboardType: keyboardTypesForTask.find(x => x.id === 5).id
+
+    useEffect(() => {
+        const fetchExe = async () => {
+            try {
+                const e = (ex !== 3) ? {
+                    id: ex,
+                    name: 'Перевод ' + ex,
+                    section: 'Лексика',
+                    description: 'Помнишь, как это будет по-испански?',
+                    typeOfTask: taskBank.MATCHING,
+                    keyboardType: keyboardTypesForTask.find(x => x.id === 5).id
+                } : 'NEW'
+
+                dispatch(setExercise(e))
+            } catch (e) {
+                console.log(e)
             }
-
-            setActiveExercise((exi.id === 3) ? 'NEW' : exi)
         }
-        getExercise()
+        fetchExe()
+        return () => {
+        }
     }, [ex])
 
     return (
@@ -52,14 +62,12 @@ const Homework = () => {
                     </Card>
                 </Col>
                 <Col md={8} className={"ps-0"}>
-                    {activeExercise &&
-                        <ExerciseSettings
-                            ex={activeExercise}
-                            setActiveExercise={setActiveExercise}
-                        />}
-                    <Board/>
+                    <ExerciseSettings ex={ex}/>
                 </Col>
 
+            </Row>
+            <Row className={"px-2 pe-4 mt-3"}>
+                <Board  ex={ex}/>
             </Row>
         </Tab.Container>
     );

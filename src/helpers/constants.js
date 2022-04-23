@@ -1,5 +1,18 @@
 export const SERVER_URL = process.env.REACT_APP_SERVER_URL + `/api_v1/dashboard`
 
+export const LESSON_TABS = {
+    LESSON: 'LESSON',
+    HOMEWORK: 'HOMEWORK',
+    TRAINER: 'TRAINER'
+}
+
+export const ITEM_STATUS = {
+    NEW: 'NEW'
+}
+export const USER_ROLE ={
+    REVIEWER: 'REVIEWER',
+    TEACHER: 'TEACHER'
+}
 export const keyboardTypesForTask = [
     {id: 1, title: 'Choice 1 of 2 variants'},
     {id: 2, title: 'Choice 1 of 4 variants'},

@@ -11,6 +11,7 @@ import ShortEditLesson from "../components/Course/ShortEditLesson";
 import {setError} from "../store/reducers/userSlice";
 import AddCourse from "../components/Course/addCourse";
 import Header from "../components/Header";
+import CourseService from "../services/CourseService";
 
 function useQuery() {
     const {search} = useLocation();
@@ -45,15 +46,13 @@ const Course = () => {
         useEffect(() => {
             const getCourse = async () => {
                 try {
-                    const {data: course} = await fetchCourse(courseId)
-
+                    const {data: course} = await CourseService.fetchCourse(courseId)
                     await dispatch(setCourse({
                         courseId: course.courseId,
                         symbol: course.symbol,
                         title: course.title
                     }))
                     const languages = course.languages
-
                     const courseLessons = languages.map((lang) => {
                         return lang.lessons.map(lesson => {
                             return {...lesson, lang: lang.id}

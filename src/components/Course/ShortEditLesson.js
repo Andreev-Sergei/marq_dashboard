@@ -21,7 +21,8 @@ import {useDispatch} from "react-redux";
 import {fetchShortLessonItem} from "../../api/lesson";
 import {useForm} from "react-hook-form";
 import {editLesson} from "../../store/reducers/courseSlice";
-import LessonService from "../../services/LessonService";
+import LessonService from "../../services/LessonServices/LessonService";
+import CourseService from "../../services/CourseService";
 
 const ShortEditLesson = ({activeLesson}) => {
     const [loading, setLoading] = useState(false)
@@ -36,23 +37,22 @@ const ShortEditLesson = ({activeLesson}) => {
     }
 
 
-    const formSubmit = (data) => {
+    const formSubmit = async () => {
         setLoadingChanges(true)
-        setTimeout(() => {
-            const lesson = {...getValues(), id: activeLesson, emoji: emoji.native}
-            // send data to server
-            console.log(lesson)
-            dispatch(editLesson(lesson))
-            setLoadingChanges(false)
-            setEdited(null)
-        }, 500)
+        const lesson = {...getValues(), id: activeLesson, emoji: emoji.native}
+        // send data to server
+        const {data} = await CourseService.editLesson(activeLesson, lesson)
+        dispatch(editLesson(data))
+        setLoadingChanges(false)
+        setEdited(null)
+
 
     }
     useEffect(() => {
         const fetchShortLesson = async () => {
             try {
                 setLoading(true)
-                const {data: lesson} = await LessonService.fetchLesson(activeLesson, true)
+                const {data: lesson} = await CourseService.fetchShortLesson(activeLesson)
 
                 setEmoji({native: lesson.emoji})
                 setLoading(false)
@@ -106,13 +106,13 @@ const ShortEditLesson = ({activeLesson}) => {
                                      {activeLesson}
                                 </span>
                                 {review && <Link to={LESSON_ROUTE + activeLesson}>
-                                                <Badge
-                                                        style={{color: 'black', float: 'right'}}
-                                                        className={"mb-3 float-right"}
-                                                        bg="warning">
-                                                    Review
-                                                </Badge>
-                                            </Link>}
+                                    <Badge
+                                        style={{color: 'black', float: 'right'}}
+                                        className={"mb-3 float-right"}
+                                        bg="warning">
+                                        Review
+                                    </Badge>
+                                </Link>}
                             </p>
                         </Col>
                     </Row>

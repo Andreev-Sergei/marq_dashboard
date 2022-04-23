@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from 'react';
-import {Button, Card, Col, Container, Nav, ProgressBar, Row} from "react-bootstrap";
+import React, {useEffect, useMemo, useState} from 'react';
+import {Button, Col, Container, Nav,  Row} from "react-bootstrap";
 import {useDispatch, useSelector} from "react-redux";
-import {setLesson, setReviewed} from "../store/reducers/lessonSlice";
+import {setReviewed} from "../store/reducers/lessonSlice";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faShare} from "@fortawesome/free-solid-svg-icons";
 import {Check} from "react-bootstrap-icons";
@@ -9,41 +9,31 @@ import Header from "../components/Header";
 import Trainer from "../components/Lesson/Trainer/Trainer";
 import Homework from "../components/Lesson/Homework/Homework";
 import LessonBody from "../components/Lesson/LessonBody/LessonBody";
-import LessonService from "../services/LessonService";
+import LessonService from "../services/LessonServices/LessonService";
 import {useParams} from "react-router-dom";
+import {LESSON_TABS, USER_ROLE} from "../helpers/constants";
 
-
-const LESSON_TABS = {
-    LESSON: 'LESSON',
-    HOMEWORK: 'HOMEWORK',
-    TRAINER: 'TRAINER'
-}
 
 const LessonEdit = () => {
     const {id: lessonId} = useParams()
+
+    const {reviewed, board} = useSelector(state => state.lesson)
     const {user} = useSelector(state => state.user)
-    const [activeTab, setActiveTab] = useState(LESSON_TABS.LESSON)
     const dispatch = useDispatch()
-    const [fullLesson, setFullLesson] = useState(10)
-    const {reviewed} = useSelector(state => state.lesson)
-    const [boardIsLoading, setBoardIsLoading] = useState(true)
 
-    useEffect(() => {
-        const getLessonBody = async () => {
-            try {
+    const [activeTab, setActiveTab] = useState(LESSON_TABS.TRAINER)
+    const [fullLesson, setFullLesson] = useState(0)
 
-                setTimeout(async () => {
-                    const response = await LessonService.fetchLesson(lessonId)
-                    await dispatch(setLesson(response.data))
-                    setBoardIsLoading(false)
-                },1000)
-            } catch (e) {
 
-            }
-        }
-        getLessonBody()
 
+    useEffect(( ) => {
+        dispatch(LessonService.fetchLesson(lessonId))
     }, [])
+
+    useMemo(()=>{
+        setFullLesson(board.filter(b => b?.userInput).length)
+    },[board])
+
     return (
         <>
             <Header/>
@@ -72,7 +62,7 @@ const LessonEdit = () => {
                     </Col>
                     <Col className={"d-flex justify-content-end "}>
                         <div>
-                            {user.role === 'REVIEWER' &&
+                            {user.role === USER_ROLE.REVIEWER &&
                                 <Button className={"me-1"} disabled={reviewed}
                                         onClick={() => dispatch(setReviewed())}
                                         variant={"outline-primary"}>
@@ -85,15 +75,7 @@ const LessonEdit = () => {
                         </div>
                     </Col>
                 </Row>
-                {activeTab === LESSON_TABS.LESSON && <LessonBody fullLesson={fullLesson} boardIsLoading={boardIsLoading}/>}
-                {/*<LessonBody boardIsLoading={boardIsLoading} fullLesson={fullLesson} board={board}*/}
-                {/*            element={chatItem => (*/}
-                {/*                (chatItem.type === 'MESSAGE')*/}
-                {/*                    ?*/}
-                {/*                    <Message key={chatItem.id} item={chatItem}/>*/}
-                {/*                    :*/}
-                {/*                    <LessonTaskWrapper key={chatItem.id} item={chatItem}/>*/}
-                {/*            )}/>}*/}
+                {activeTab === LESSON_TABS.LESSON && <LessonBody fullLesson={fullLesson}/>}
                 {activeTab === LESSON_TABS.TRAINER && <Trainer/>}
                 {activeTab === LESSON_TABS.HOMEWORK && <Homework/>}
             </Container>

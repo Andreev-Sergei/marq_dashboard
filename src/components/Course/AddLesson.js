@@ -4,6 +4,7 @@ import Picker from "emoji-mart/dist-modern/components/picker/picker";
 import {useForm} from "react-hook-form";
 import {useDispatch} from "react-redux";
 import {addLesson} from "../../store/reducers/courseSlice";
+import CourseService from "../../services/CourseService";
 
 const AddLesson = ({langId}) => {
     const {register, handleSubmit, reset, formState: {errors}} = useForm();
@@ -12,19 +13,20 @@ const AddLesson = ({langId}) => {
     const [emoji, setEmoji] = useState({})
     const dispatch = useDispatch()
 
-    const onSubmit = async data => {
+    const onSubmit = async formData => {
 
-        setLoadingChanges(true)
-        setTimeout(()=> {
-            data.emoji = emoji.native
+        try {
+            setLoadingChanges(true)
+            formData.emoji = emoji.native
             setEdited(false)
-            dispatch(addLesson({
-                ...data, id: Date.now(), lang: langId
-            }))
+            const {data: newLesson} = await CourseService.addLesson({...formData})
+            dispatch(addLesson({...newLesson, lang: langId}))
             reset()
             setEmoji({})
             setLoadingChanges(false)
-        },300)
+        } catch (e) {
+            console.log(e)
+        }
 
     };
 

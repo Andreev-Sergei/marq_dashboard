@@ -1,16 +1,22 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Button} from "react-bootstrap";
 import {useDispatch, useSelector} from "react-redux";
-import {addChatItem, cancelMsgEdit, editChatItem as editChatItemAction} from "../../../store/reducers/lessonSlice";
+import {
+    addChatItem,
+    addMessageItemWithNewBlock, addMessageToExisingBlock, addMessageToNewBlock, cancelMessageEdit,
+    cancelMsgEdit,
+    editChatItem as editChatItemAction
+} from "../../../store/reducers/lessonSlice";
 import * as sanitizeHtml from 'sanitize-html';
 import GiphyPicker from "./MessageEditorElements/GiphyPicker";
 import {msgTypes} from "../../../helpers/constants";
 import Editor from "./MessageEditorElements/Editor";
 import MessageTypeChanger from "./MessageEditorElements/MessageTypeChanger";
+import MessageService from "../../../services/LessonServices/MessageService";
 
 
 const MessageEditor = () => {
-    const {editChatItem} = useSelector(state => state.lesson)
+    const {editChatItem, board} = useSelector(state => state.lesson)
     const [msg, setMsg] = useState(`Type here the next Marq’s message`)
     const [msgType, setMsgType] = useState(msgTypes.USUAL)
     const [gif, setGif] = useState(null)
@@ -20,29 +26,38 @@ const MessageEditor = () => {
 
     useEffect(() => {
         if (editChatItem) {
-            setMsg(editChatItem.value)
-            setMsgType(editChatItem.messageType)
+            setMsg(editChatItem.message.value)
+            setMsgType(editChatItem.message.messageType)
         }
     }, [editChatItem])
 
     const addMessage = () => {
+
         if (editChatItem) {
             const chatItem = {
-                id: editChatItem.id,
+                id: editChatItem.message.id,
                 type: 'MESSAGE',
                 value: (msgType === msgTypes.GIF) ? gif : msg,
                 messageType: msgType
             }
-            dispatch(editChatItemAction(chatItem))
+            dispatch(MessageService.editMessage(chatItem, editChatItem.blockId))
+
+            setGif(null)
         }
+
+
         if (((msg) && (!editChatItem)) || ((msgType === msgTypes.GIF) && (!editChatItem))) {
-            const msgItem = {
+            const lastBlock = board[0]
+            const addWithNewBlock = lastBlock?.userInput !== null
+
+            const message = {
                 id: Date.now(),
                 type: 'MESSAGE',
                 value: (msgType === msgTypes.GIF) ? gif : msg,
                 messageType: msgType
             }
-            dispatch(addChatItem(msgItem))
+            dispatch(MessageService.addMessage(message, addWithNewBlock, lastBlock?.blockId))
+
         }
         setMsg('')
         setMsgType(msgTypes.USUAL)
@@ -76,7 +91,7 @@ const MessageEditor = () => {
     }
     const cancelEdit = (e) => {
         e.preventDefault()
-        dispatch(cancelMsgEdit())
+        dispatch(cancelMessageEdit())
         setMsg(`Type here the next Marq’s message`)
         setMsgType('USUAL')
     }
@@ -89,11 +104,12 @@ const MessageEditor = () => {
                           handleChange={handleChange}
                           con={con}
                           keyPress={keyPress}
-                   />
+                />
                 : <GiphyPicker gif={gif} setGif={setGif}/>
             }
 
             <div className="mt-3 d-flex justify-content-between">
+
                 <MessageTypeChanger msgType={msgType} changeMessageType={changeMessageType}/>
 
                 <div className="">

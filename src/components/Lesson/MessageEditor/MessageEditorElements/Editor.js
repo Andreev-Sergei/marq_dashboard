@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {Card, OverlayTrigger, Popover} from "react-bootstrap";
 import ContentEditable from "react-contenteditable";
 import {msgTypes} from "../../../../helpers/constants";
@@ -21,7 +21,9 @@ const EditButton = ({cmd, arg, name}) => {
 }
 
 
-const Editor = ({msgType, keyPress, msg, handleChange, con }) => {
+const Editor = ({msgType, keyPress, msg, handleChange, con}) => {
+    const [contentEditableFocus, setContentEditableFocus] = useState(false)
+   // useEffect(()=> console.log(contentEditableFocus),[contentEditableFocus])
     const popover = (
         <Popover
             style={{maxWidth: 338, padding: 0, border: 0}}
@@ -35,8 +37,22 @@ const Editor = ({msgType, keyPress, msg, handleChange, con }) => {
                 // exclude={['people', 'symbols', 'recent', 'smileys', 'foods', 'activity', 'places', 'objects', 'symbols', 'nature']}
                     style={{width: 400}}
                     onSelect={({native}) => {
+                        console.log(contentEditableFocus)
+                        if (!contentEditableFocus) {
+                            con.current.focus()
+                            const end = con.current.innerHTML.length
+                            let range = document.createRange()
+                            let sel = window.getSelection()
+                            range.setStart(con.current.childNodes[0], end)
+                            range.collapse(true)
+                            sel.removeAllRanges()
+                            sel.addRange(range)
+                        } else {
+                            con.current.focus()
+                        }
                         document.execCommand("insertHTML", true, native);
                         document.body.click()
+                        setContentEditableFocus(true)
                     }}
             />
         </Popover>
@@ -74,9 +90,11 @@ const Editor = ({msgType, keyPress, msg, handleChange, con }) => {
                     tagName="div"
                     onKeyPress={keyPress}
                     html={msg}
+                    onFocus={() => setContentEditableFocus(true)}
+                    // onBlur={()=>{}}
                     disabled={false}
                     onChange={handleChange}
-                    ref={con}
+                    innerRef={con}
                 />
             </Card.Body>
         </Card>

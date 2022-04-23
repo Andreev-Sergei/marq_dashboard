@@ -1,12 +1,13 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useState} from 'react';
 import {Card} from "react-bootstrap";
 import {useDispatch, useSelector} from "react-redux";
-import {removeChatItem, setEditChatItem} from "../../../store/reducers/lessonSlice";
-import {PencilSquare, Trash, VolumeUpFill} from "react-bootstrap-icons";
-import { SayButton } from 'react-say'
+import {moveMessage, removeBlock, setEditChatItem, setEditMessage} from "../../../store/reducers/lessonSlice";
+import {PencilSquare, Trash, VolumeUpFill, GripVertical} from "react-bootstrap-icons";
+import styles from '../LessonBody/Block.module.sass'
+import {reset, setDragType, setDrugItem} from "../../../store/reducers/dragSlice";
+import MessageService from "../../../services/LessonServices/MessageService";
 
-const Message = ({item}) => {
-    // const selector = useCallback(voices => [...voices].find(v => v.lang === 'uk-UK'), [])
+const Message = ({item, blockId}) => {
 
     const getWord = (word) => {
         let str
@@ -20,17 +21,15 @@ const Message = ({item}) => {
                 style={{color: 'blue'}}
             >
                 {str}
-                    <VolumeUpFill
-                        className={"ms-1"}
-
-
-                        onClick={() => {
-                            let sound = new SpeechSynthesisUtterance()
-                            sound.text = str
-                            // sound.voice = 1
-                            window.speechSynthesis.speak(sound)
-                        }}
-                        />
+                <VolumeUpFill
+                    className={"ms-1"}
+                    onClick={() => {
+                        let sound = new SpeechSynthesisUtterance()
+                        sound.text = str
+                        // sound.voice = 1
+                        window.speechSynthesis.speak(sound)
+                    }}
+                />
             </i>
         } else if (word.includes('<b>')) {
             str = word.replace('<b>', '').replace('</b>', '')
@@ -43,17 +42,50 @@ const Message = ({item}) => {
 
         } else return <span key={key_word} className={"me-1"}>{word}</span>
     }
-    const {editChatItem} = useSelector(state => state.lesson)
+
+    const {editChatItem, board} = useSelector(state => state.lesson)
+    const {type, dragItem} = useSelector(state => state.drag)
     const dispatch = useDispatch()
 
-    const isEdit = editChatItem?.id === item.id
+    const isEdit = editChatItem?.message.id === item?.id
 
-    const hendleEditChatItem = () => {
-        dispatch(setEditChatItem(item))
-    }
+    const handleEditChatItem = () => dispatch(setEditMessage({message: item, blockId}))
 
     const handleRemoveChatItem = () => {
-        dispatch(removeChatItem(item.id))
+        const block = board.find(block => block.blockId === blockId)
+        const removeBlock = block.messages.length === 1 && !block.userInput
+        dispatch(MessageService.removeMessage(removeBlock, blockId, item.id))
+    }
+
+    function dragStartHandler(e, msg) {
+        dispatch(setDrugItem({message: msg, blockId}))
+    }
+
+    function dragEndHandler(e) {
+        (type === 'MSG') && e.target.parentNode.classList.remove(styles.hoveredMsg)
+    }
+
+    function dragOverHandler(e) {
+        // (currentMsg) && e.target.classList.add(styles.hoveredBlock)
+        (type === 'MSG' && dragItem.blockId !== blockId) && e.target.parentNode.classList.add(styles.hoveredMsg)
+
+        e.preventDefault()
+    }
+
+    function dragDropHandler(e) {
+        e.preventDefault()
+        if (type === 'MSG' && dragItem.blockId !== blockId) {
+            const parentBlock = board.find(block => block.blockId === dragItem.blockId)
+            dispatch(MessageService.moveMessage(
+                dragItem.message,
+                dragItem.blockId,
+                blockId,
+                parentBlock.blockId,
+                parentBlock.messages.length === 1 && parentBlock?.userInput === null,
+            ))
+            e.target.parentNode.classList.remove(styles.hoveredMsg)
+        }
+        dispatch(reset())
     }
 
     const getMessage = (str) => {
@@ -66,23 +98,41 @@ const Message = ({item}) => {
                 voiceStart = i
             }
             if (word.includes('</i>')) {
-                voiceEnd = i +1
+                voiceEnd = i + 1
             }
         })
         const voice = words.slice(voiceStart, voiceEnd).join(' ')
 
-        newVoiceWords = [...words.filter((word, index )=> index < voiceStart),voice, ...words.filter((word, index )=> index >= voiceEnd ) ]
-        console.log(newVoiceWords)
+        newVoiceWords = [...words.filter((word, index) => index < voiceStart), voice, ...words.filter((word, index) => index >= voiceEnd)]
+
         if (voiceStart === 0) {
             newVoiceWords = [voice, ...words.slice(voiceEnd, words.length)]
         }
         if (voiceEnd === words.length) {
             newVoiceWords = [...words.filter((w, i) => i < voiceStart), voice]
         }
-        return newVoiceWords.map(word => getWord(word)) //  str.split(' ').map(word => getWord(word))
+        return newVoiceWords.map(word => getWord(word))
+    }
+    if (!item) {
+        return <Card
+            onDragStart={(e) => dragStartHandler(e, item)}
+            onDragLeave={(e) => dragEndHandler(e)}
+            onDragEnd={(e) => dragEndHandler(e)}
+            onDragOver={(e) => dragOverHandler(e)}
+            onDrop={(e) => dragDropHandler(e, item)}
+            className={styles.message} style={{userSelect: 'none', padding: '10px'}}
+        ><Card className={"p-2"}>Drag message here</Card></Card>
     }
     return (
-        <div>
+        <div draggable={type === 'MSG'}
+             key={item.id + blockId + 'dfdf'}
+             onDragStart={(e) => dragStartHandler(e, item)}
+             onDragLeave={(e) => dragEndHandler(e)}
+             onDragEnd={(e) => dragEndHandler(e)}
+             onDragOver={(e) => dragOverHandler(e)}
+             onDrop={(e) => dragDropHandler(e, item)}
+             className={styles.message} style={{userSelect: 'none'}}
+        >
             <Card className={`my-2 p-2 d-inline-block ${isEdit && 'bg-primary text-white'}`}>
                 {item.messageType === 'GIF'
                     ?
@@ -91,9 +141,13 @@ const Message = ({item}) => {
                     getMessage(item.value)
                 }
                 <Trash className={"mx-2"} role={"button"} onClick={handleRemoveChatItem}>Remove</Trash>
-                <PencilSquare role={"button"} onClick={hendleEditChatItem}>Edit</PencilSquare>
+                <PencilSquare role={"button"} onClick={handleEditChatItem}>Edit</PencilSquare>
+                <GripVertical role={"button"} className={'mx-2'}
+                              onMouseDown={() => dispatch(setDragType('MSG'))}
+                />
             </Card>
             <small style={{fontSize: 9, marginLeft: 8}}>{item.type == 'MESSAGE' && item.messageType}</small>
+
         </div>
     );
 };

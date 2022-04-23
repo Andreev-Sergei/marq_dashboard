@@ -1,8 +1,9 @@
 import React from 'react';
 import {Card} from "react-bootstrap";
-import {useDispatch} from "react-redux";
-import {addChatItem} from "../../store/reducers/lessonSlice";
+import {useDispatch, useSelector} from "react-redux";
+import {addChatItem, addTaskToExistingBlock, addTaskToNewBlock} from "../../store/reducers/lessonSlice";
 import {taskBankArray} from "../../helpers/constants";
+import TaskService from "../../services/LessonServices/TaskService";
 
 const taskBankA = [
     {id: 1, title: 'Input'},
@@ -17,15 +18,22 @@ const taskBankA = [
 
 const TaskBank = () => {
     const dispatch = useDispatch()
+    const {board} = useSelector(state => state.lesson)
+
     const addTask = ({constantName, title}) => {
-        dispatch(addChatItem({
+
+        const task = {
             id: + Date.now(),
             type: 'TASK',
             typeTitle: title,
             taskType: constantName,
             value: '',
             isNew: true,
-        }))
+        }
+        const lastBlock = board[0]
+
+        dispatch(TaskService.addTask(task, lastBlock.userInput === null, lastBlock.blockId))
+
     }
 
     return (

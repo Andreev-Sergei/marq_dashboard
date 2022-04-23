@@ -11,9 +11,9 @@ const Header = ({title}) => {
 
 
 
-        useEffect(()=> {
-            console.log({lessonName, lessonId, pCourse, pLang})
-        }, [lessonId])
+        // useEffect(()=> {
+        //     console.log({lessonName, lessonId, pCourse, pLang})
+        // }, [lessonId])
 
         if (isAuth) {
             return (
