@@ -20,10 +20,24 @@ export const homeworkSlice = createSlice({
                 board: action.payload
             }
         },
+        addTask: (state, action) => {
+            console.log('add task to homework', action.payload)
+            return {
+                ...state,
+                board: [action.payload, ...state.board]
+            }
+        },
+        removeTask: (state, action) => {
+            console.log('remove homework task', action.payload)
+            return {
+                ...state,
+                board: [ ...state.board.filter(task => task.id !== action.payload)]
+            }
+        }
     },
 })
 
 // Action creators are generated for each case reducer function
-export const {setExercise,setBoard } = homeworkSlice.actions
+export const {setExercise,setBoard, addTask, removeTask } = homeworkSlice.actions
 
 export default homeworkSlice.reducer

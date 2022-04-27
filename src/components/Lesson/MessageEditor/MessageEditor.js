@@ -1,25 +1,22 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Button} from "react-bootstrap";
 import {useDispatch, useSelector} from "react-redux";
-import {
-    addChatItem,
-    addMessageItemWithNewBlock, addMessageToExisingBlock, addMessageToNewBlock, cancelMessageEdit,
-    cancelMsgEdit,
-    editChatItem as editChatItemAction
-} from "../../../store/reducers/lessonSlice";
+import {cancelMessageEdit} from "../../../store/reducers/lessonSlice";
 import * as sanitizeHtml from 'sanitize-html';
 import GiphyPicker from "./MessageEditorElements/GiphyPicker";
 import {msgTypes} from "../../../helpers/constants";
 import Editor from "./MessageEditorElements/Editor";
 import MessageTypeChanger from "./MessageEditorElements/MessageTypeChanger";
 import MessageService from "../../../services/LessonServices/MessageService";
+import ImagePicker from "./MessageEditorElements/ImagePicker";
 
 
 const MessageEditor = () => {
-    const {editChatItem, board} = useSelector(state => state.lesson)
+    const {editChatItem, board, lessonId} = useSelector(state => state.lesson)
     const [msg, setMsg] = useState(`Type here the next Marq’s message`)
-    const [msgType, setMsgType] = useState(msgTypes.USUAL)
+    const [msgType, setMsgType] = useState(msgTypes.IMAGE)
     const [gif, setGif] = useState(null)
+    const [img, setImg] = useState('')
     const [isEmpty, setIsEmpty] = useState(false)
     const dispatch = useDispatch()
     const con = useRef(null)
@@ -40,23 +37,35 @@ const MessageEditor = () => {
                 value: (msgType === msgTypes.GIF) ? gif : msg,
                 messageType: msgType
             }
-            dispatch(MessageService.editMessage(chatItem, editChatItem.blockId))
+            dispatch(MessageService.editMessage(chatItem, lessonId, editChatItem.blockId))
 
             setGif(null)
         }
 
 
-        if (((msg) && (!editChatItem)) || ((msgType === msgTypes.GIF) && (!editChatItem))) {
+        if (((msg) && (!editChatItem)) || ((msgType === msgTypes.GIF) &&
+            (!editChatItem)) || ((msgType === msgTypes.IMAGE) && (!editChatItem))) {
             const lastBlock = board[0]
             const addWithNewBlock = lastBlock?.userInput !== null
-
+            const value = (msgType) => {
+                switch (msgType) {
+                    case msgTypes.GIF:
+                        return gif;
+                        break
+                    case msgTypes.IMAGE:
+                        return img.file
+                        break
+                    default:
+                        return msg
+                        break
+                }
+            }
             const message = {
-                id: Date.now(),
                 type: 'MESSAGE',
-                value: (msgType === msgTypes.GIF) ? gif : msg,
+                value: value(msgType),
                 messageType: msgType
             }
-            dispatch(MessageService.addMessage(message, addWithNewBlock, lastBlock?.blockId))
+            dispatch(MessageService.addMessage(lessonId, message, addWithNewBlock, lastBlock?.blockId))
 
         }
         setMsg('')
@@ -74,10 +83,10 @@ const MessageEditor = () => {
         }
     }
 
-    const sanitize = () => {
-        const a = sanitizeHtml(msg.replace('&nbsp;', ' '), sanitizeConf)
-        setMsg(a);
-    };
+    // const sanitize = () => {
+    //     const a = sanitizeHtml(msg.replace('&nbsp;', ' '), sanitizeConf)
+    //     setMsg(a);
+    // };
 
     const handleChange = evt => {
         const value = evt.target.value
@@ -98,15 +107,18 @@ const MessageEditor = () => {
 
     return (
         <div className="d-flex flex-column justify-content-end">
-            {msgType !== msgTypes.GIF
-                ? <Editor msgType={msgType}
-                          msg={msg}
-                          handleChange={handleChange}
-                          con={con}
-                          keyPress={keyPress}
+
+            {(msgType === msgTypes.VOCABULARY || msgType === msgTypes.USUAL) &&
+                <Editor msgType={msgType}
+                        msg={msg}
+                        handleChange={handleChange}
+                        con={con}
+                        keyPress={keyPress}
                 />
-                : <GiphyPicker gif={gif} setGif={setGif}/>
             }
+            {msgType === msgTypes.GIF &&  <GiphyPicker gif={gif} setGif={setGif}/>}
+            {msgType === msgTypes.IMAGE &&  <ImagePicker img={img} setImg={setImg}/>}
+
 
             <div className="mt-3 d-flex justify-content-between">
 

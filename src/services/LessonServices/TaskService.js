@@ -1,10 +1,12 @@
 import $api from "../../api";
 import {
     addTaskToExistingBlock,
-    addTaskToNewBlock, removeBlock,
+    addTaskToNewBlock,
+    removeBlock,
     removeTaskFromBlock,
-    removeUserInputBlock,
 } from "../../store/reducers/lessonSlice";
+import {taskBankArray} from "../../helpers/constants";
+import {addTask, removeTask} from "../../store/reducers/HomeworkSlice";
 
 export default class TaskService {
 
@@ -19,6 +21,25 @@ export default class TaskService {
                 dispatch(addTaskToNewBlock({task, blockId: newBlockId}))
             }
 
+        } catch (e) {
+            console.log(e)
+        }
+    }
+    static addHomeworkTask = (exerciseId, lessonId, keyboardType, taskType) => async dispatch => {
+        try {
+            const task = {
+                type: 'TASK',
+                typeTitle: taskBankArray.find(x => x.constantName === taskType).title,
+                taskType: taskType,
+                value: '',
+            }
+            const {data} = await $api.post(`/dashboard/homework-board`,
+                task,
+                {
+                    params: {lessonId, exerciseId},
+                },
+            )
+            dispatch(addTask(data.task))
         } catch (e) {
             console.log(e)
         }
@@ -38,9 +59,20 @@ export default class TaskService {
             
         }
     }
-    static editTask = async (task, blockId) =>  {
+    static removeHomeworkTask = (taskId, exerciseId, lessonId) => async dispatch => {
         try {
-            const taskFromServer = await {...task, blockId}
+            // del
+
+            dispatch(removeTask(taskId))
+        }
+        catch (e) {
+
+        }
+    }
+    static editTask = async (task, blockId, lessonId, isHomework, exerciseId) => {
+        try {
+
+            const taskFromServer = {task, blockId, lessonId: Number(lessonId), isHomework, exerciseId}
             return taskFromServer
         }
         catch (e) {

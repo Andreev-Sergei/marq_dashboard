@@ -54,7 +54,7 @@ const Course = () => {
                     }))
                     const languages = course.languages
                     const courseLessons = languages.map((lang) => {
-                        return lang.lessons.map(lesson => {
+                        return lang.lessons?.map(lesson => {
                             return {...lesson, lang: lang.id}
                         })
                     })
@@ -63,6 +63,7 @@ const Course = () => {
                     dispatch(setCourseLangs(languages))
                 } catch (e) {
                     dispatch(setError(e))
+                    console.log(e)
                 }
             }
             getCourse()

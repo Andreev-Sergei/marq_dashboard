@@ -20,7 +20,7 @@ const CourseSidebar = ({
         <Card className={"p-2"}>
             <Accordion defaultActiveKey={activeLang}
             >
-                {langs.map((lang) => {
+                {langs?.map((lang) => {
                         return <Accordion.Item
                             style={{border: "none"}}
                             eventKey={lang.id}

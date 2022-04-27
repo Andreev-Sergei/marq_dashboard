@@ -4,7 +4,6 @@ import {taskBank} from "../../../../helpers/constants";
 
 const Variant = ({variant, word, taskType, handleChangeVariant}) => {
     const inputValue = (variant.right && word) ? word : variant.word
-
     return (
         <Form.Group
             className="mb-2 d-flex"

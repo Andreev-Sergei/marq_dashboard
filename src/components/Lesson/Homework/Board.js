@@ -1,40 +1,21 @@
 import React, {useEffect} from 'react';
-import {Card} from "react-bootstrap";
+import {Button, Card} from "react-bootstrap";
 import HomeworkTask from "./HomeworkTask";
-import {keyboardTypesForTask, taskBank} from "../../../helpers/constants";
 import {useDispatch, useSelector} from "react-redux";
-import {setBoard} from "../../../store/reducers/HomeworkSlice";
+import TaskService from "../../../services/LessonServices/TaskService";
+import LessonService from "../../../services/LessonServices/LessonService";
 
-const exerciseBoard = {
-    typeOfTask: taskBank.INPUT,
-    keyboardType: keyboardTypesForTask.find(x => x.id === 5).id,
-    board: [
-        {
-            id: 32,
-            variants: [
-                {id: 1, word: 'собака', right: true},
-                {id: 2, word: 'кошка', right: false}
-            ],
-            value: 'Dog - <i>собака</i>'
-        },
-        {
-            id: 22,
-            variants: [
-                {id: 1, word: 'кошка', right: true},
-                {id: 2, word: 'собака', right: false}
-            ],
-            value: 'Cat - <i>кошка</i>'
-        },
 
-    ]
-}
 const Board = () => {
     const {exercise: exe, board} = useSelector(state => state.homework)
+    const {lessonId} = useSelector(state => state.lesson)
     const dispatch = useDispatch()
     useEffect(() => {
         const fetchExeBoard = async () => {
             try {
-                dispatch(setBoard((exe === 'NEW') ? null : exerciseBoard.board))
+                if (lessonId && exe?.id){
+                dispatch(LessonService.fetchHomeworkBoard(exe?.id, lessonId))
+                }
             } catch (e) {
                 console.log(e)
             }
@@ -42,17 +23,30 @@ const Board = () => {
         fetchExeBoard()
         return () => {
         }
-    }, [exe])
+    }, [exe?.id])
 
+    const addHomeworkItem = () => {
+        dispatch(TaskService.addHomeworkTask(exe.id, + lessonId, exe?.keyboardType, exe?.typeOfTask))
+    }
     return (
-        <Card className={"mx-1 me-5 p-3 "}>
-            <div className={"d-flex justify-content-evenly"}>
-                {board ? board?.map(task => <HomeworkTask   key={task.id}
+        <Card className={"mx-1 me-5 p-3"}>
+            {exe &&
+            <Button
+                style={{maxWidth: 200}}
+                className={"mb-1"}
+                size={'sm'}
+                onClick={addHomeworkItem}
+            > add Item</Button>}
+            <hr/>
+            <div className={"d-flex justify-content-start flex-wrap pt-1"} style={{gridTemplateColumns: '1fr 1fr', gridRowGap: 20}}>
+            {exe !== null && board?.map(task => <HomeworkTask   key={task.id}
                                                             keyboardType={exe?.keyboardType}
                                                             typeOfTask={exe?.typeOfTask}
-                                                            task={task} />
-                ): <p className={"p-2 pb-0"}>Create exercise in the form above</p>}
+                                                            task={task} />)}
+
             </div>
+            {exe === null && <p className={"p-2 pb-0"}>Create exercise in the form above</p>}
+            {exe !== null && board.length === 0 && <p className={"p-2 pb-0"}>Exercise is empty, add new task </p>}
         </Card>
     );
 };

@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import {Button, Col, Container, Nav,  Row} from "react-bootstrap";
+import {Button, Col, Container, Nav, Row} from "react-bootstrap";
 import {useDispatch, useSelector} from "react-redux";
 import {setReviewed} from "../store/reducers/lessonSlice";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
@@ -12,6 +12,7 @@ import LessonBody from "../components/Lesson/LessonBody/LessonBody";
 import LessonService from "../services/LessonServices/LessonService";
 import {useParams} from "react-router-dom";
 import {LESSON_TABS, USER_ROLE} from "../helpers/constants";
+import $api from "../api";
 
 
 const LessonEdit = () => {
@@ -24,15 +25,29 @@ const LessonEdit = () => {
     const [activeTab, setActiveTab] = useState(LESSON_TABS.TRAINER)
     const [fullLesson, setFullLesson] = useState(0)
 
+    const approveLesson  = async () => {
+        try {
+            await $api.patch('/dashboard/lesson', {  approve: true }, {params: {lessonId}})
+            dispatch(setReviewed())
+        } catch (e) {
+        }
+    }
 
+    useEffect(() => {
+        try {
+            const fetchLesson = ()=> {
+                dispatch(LessonService.fetchLesson(lessonId))
+            }
+            fetchLesson()
+        }
+       catch (e) {
 
-    useEffect(( ) => {
-        dispatch(LessonService.fetchLesson(lessonId))
-    }, [])
+       }
+    }, [lessonId])
 
-    useMemo(()=>{
+    useMemo(() => {
         setFullLesson(board.filter(b => b?.userInput).length)
-    },[board])
+    }, [board])
 
     return (
         <>
@@ -64,7 +79,7 @@ const LessonEdit = () => {
                         <div>
                             {user.role === USER_ROLE.REVIEWER &&
                                 <Button className={"me-1"} disabled={reviewed}
-                                        onClick={() => dispatch(setReviewed())}
+                                        onClick={approveLesson}
                                         variant={"outline-primary"}>
                                     {!reviewed ? <> <Check className={"me-2"}/> Approve</> : 'Approved'}
                                 </Button>}
@@ -76,8 +91,9 @@ const LessonEdit = () => {
                     </Col>
                 </Row>
                 {activeTab === LESSON_TABS.LESSON && <LessonBody fullLesson={fullLesson}/>}
-                {activeTab === LESSON_TABS.TRAINER && <Trainer/>}
                 {activeTab === LESSON_TABS.HOMEWORK && <Homework/>}
+                {activeTab === LESSON_TABS.TRAINER && <Trainer/>}
+
             </Container>
         </>
     );

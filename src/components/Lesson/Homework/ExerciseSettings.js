@@ -1,18 +1,17 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {Card, Col, FormControl, InputGroup, Row, Form, Button} from "react-bootstrap";
-import {getKeyboardArrayByTaskType, keyboardTypesForTask, taskBank} from "../../../helpers/constants";
+import React, {useEffect, useState} from 'react';
+import {Button, Col, Form, FormControl, InputGroup, Row} from "react-bootstrap";
+import {getKeyboardArrayByTaskType, taskBank} from "../../../helpers/constants";
 import {useForm} from "react-hook-form";
-import {fetchLangItem} from "../../../api/course";
-import {setLangItem} from "../../../store/reducers/courseSlice";
-import {setError} from "../../../store/reducers/userSlice";
 import {useDispatch, useSelector} from "react-redux";
 import {setExercise} from "../../../store/reducers/HomeworkSlice";
+import $api from "../../../api";
 
 const ExerciseSettings = ({ex}) => {
-    const {register, getValues, handleChange, setValue, handleSubmit, replace, formState: {errors}} = useForm()
+    const {register, getValues, setValue, handleSubmit} = useForm()
     const dispatch = useDispatch()
     const [isEdit, setIsEdit] = useState(false)
     const {exercise: exe} = useSelector(state => state.homework)
+    const {lessonId} = useSelector(state => state.lesson)
 
     useEffect(() => {
         setValue("name", exe?.name);
@@ -20,17 +19,35 @@ const ExerciseSettings = ({ex}) => {
         setValue("section", exe?.section);
         setValue("keyboardType", exe?.keyboardType);
         setValue("typeOfTask", exe?.typeOfTask);
-    }, [exe])
+    }, [exe?.id])
 
 
-    const handleSubmitEx = () => {
-        const exercise = {
-            ...getValues(),
-            id: (exe !== 'NEW') ? exe.id : Date.now()
+    const handleSubmitEx = async () => {
+        try {
+            const exercise = {
+                ...getValues()
+            }
+            let newExercise = null
+            if (exe) {
+                newExercise = await $api.put('dashboard/homework', exercise, {
+                    params: {
+                        exerciseId: +ex, lessonId
+                    }
+                })
+                console.log('edit ex')
+            } else {
+                newExercise = await $api.post('dashboard/homework', exercise, {
+                    params: {
+                        exerciseId: +ex, lessonId
+                    }
+                })
+                console.log('create ex')
+            }
+            dispatch(setExercise({...newExercise.data, id: +newExercise.data.id}))
+            setIsEdit(false)
+        } catch (e) {
+
         }
-        dispatch(setExercise(exercise))
-        console.log(exercise)
-        setIsEdit(false)
     }
     return (
         <Form className={'py-2 px-2'}
@@ -68,7 +85,7 @@ const ExerciseSettings = ({ex}) => {
             <Row>
                 <Col className={"pe-0"}>
                     <Form.Select aria-label="Default select example"
-                                 {...register("typeOfTask", {required: false})}
+                                 {...register("typeOfTask", {required: true})}
                     >
                         <option value={taskBank.INPUT}>INPUT</option>
                         <option value={taskBank.INSERTION}>INSERTION</option>
@@ -77,7 +94,9 @@ const ExerciseSettings = ({ex}) => {
                     </Form.Select>
                 </Col>
                 <Col className={"pe-0"}>
+
                     <Form.Select aria-label="Default select example"
+                                 style={{display: exe?.typeOfTask == taskBank.MATCHING ? 'none' : ''}}
                                  {...register("keyboardType", {required: false})}
                     >
                         {getKeyboardArrayByTaskType(exe?.type).map((keyboard) =>

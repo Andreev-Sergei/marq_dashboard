@@ -1,14 +1,16 @@
-import React, {useCallback, useState} from 'react';
-import {Card} from "react-bootstrap";
+import React, {useState} from 'react';
+import {Card, Modal} from "react-bootstrap";
 import {useDispatch, useSelector} from "react-redux";
-import {moveMessage, removeBlock, setEditChatItem, setEditMessage} from "../../../store/reducers/lessonSlice";
-import {PencilSquare, Trash, VolumeUpFill, GripVertical} from "react-bootstrap-icons";
+import {setEditMessage} from "../../../store/reducers/lessonSlice";
+import {GripVertical, PencilSquare, Trash, VolumeUpFill} from "react-bootstrap-icons";
 import styles from '../LessonBody/Block.module.sass'
 import {reset, setDragType, setDrugItem} from "../../../store/reducers/dragSlice";
 import MessageService from "../../../services/LessonServices/MessageService";
+import {msgTypes} from "../../../helpers/constants";
 
 const Message = ({item, blockId}) => {
-
+    const [openModal, setOpenModal] = useState(false)
+    const handleClose = () => setOpenModal(false)
     const getWord = (word) => {
         let str
         const key_word = Math.random() // mock
@@ -123,6 +125,8 @@ const Message = ({item, blockId}) => {
             className={styles.message} style={{userSelect: 'none', padding: '10px'}}
         ><Card className={"p-2"}>Drag message here</Card></Card>
     }
+    const imgUrl = item.messageType === msgTypes.IMAGE ? item?.value : item?.value?.fixed_height?.url
+
     return (
         <div draggable={type === 'MSG'}
              key={item.id + blockId + 'dfdf'}
@@ -134,9 +138,10 @@ const Message = ({item, blockId}) => {
              className={styles.message} style={{userSelect: 'none'}}
         >
             <Card className={`my-2 p-2 d-inline-block ${isEdit && 'bg-primary text-white'}`}>
-                {item.messageType === 'GIF'
+                {item.messageType === msgTypes.GIF || item.messageType === msgTypes.IMAGE
                     ?
-                    <img src={item.value.fixed_height.url}/>
+                    <img style={{maxWidth: 300}} src={imgUrl}
+                         onClick={()=> setOpenModal(true)}/>
                     :
                     getMessage(item.value)
                 }
@@ -147,7 +152,12 @@ const Message = ({item, blockId}) => {
                 />
             </Card>
             <small style={{fontSize: 9, marginLeft: 8}}>{item.type == 'MESSAGE' && item.messageType}</small>
-
+            <Modal show={openModal} onHide={handleClose} size={"lg"} animation={false}>
+                <img
+                    className={"p-2"}
+                    src={imgUrl}
+                    alt=""/>
+            </Modal>
         </div>
     );
 };

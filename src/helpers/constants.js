@@ -59,5 +59,6 @@ export const getKeyboardArrayByTaskType = TYPE => {
 export const msgTypes = {
     GIF: 'GIF',
     USUAL: 'USUAL',
-    VOCABULARY: 'VOCABULARY'
+    VOCABULARY: 'VOCABULARY',
+    IMAGE: 'IMAGE',
 }

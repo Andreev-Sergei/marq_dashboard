@@ -24,10 +24,13 @@ const LessonTaskWrapper = ({item, blockId, isHomeWork}) => {
     const [word, setWord] = useState(item?.variants?.find(variant => variant.right == true)?.word || null)
     const [activeKeyboardType, setActiveKeyboardType] = useState(item.keyboardType || keyboardTypesForTask[0].id)
     const [variants, setVariants] = useState(item.variants || variantsConstructor(activeKeyboardType))
+
     const [edit, setEdit] = useState(false)
     const [itemType, setItemType] = useState({title: item.typeTitle, constantName: item.taskType})
-    const {board} = useSelector(state=> state.lesson)
+    const [matchingData, setMatchingData] = useState(itemType.constantName === taskBank.MATCHING ? item.variants : null)
+    const {board, lessonId} = useSelector(state => state.lesson)
     const [taskDescription, setTaskDescription] = useState(item.description || '')
+    const {exercise: exe} = useSelector(state => state.homework)
     const dispatch = useDispatch()
     const keyPress = (event) => {
         if (event.charCode === 13) {
@@ -41,11 +44,12 @@ const LessonTaskWrapper = ({item, blockId, isHomeWork}) => {
             setEdit(true)
         }
     };
-    const handleRemoveChatItem = () => {
+    const handleRemoveChatItem = async () => {
         if (isHomeWork) {
-            return console.log('delte from homework')
+            dispatch(TaskService.removeHomeworkTask(item.id,  exe.id, lessonId))
+        } else {
+            dispatch(TaskService.removeTask(board.find(b => b.blockId === blockId)))
         }
-        dispatch(TaskService.removeTask(board.find(b=> b.blockId === blockId)))
         if (!item.isNew) {
             setEdit(true)
         }
@@ -113,11 +117,18 @@ const LessonTaskWrapper = ({item, blockId, isHomeWork}) => {
     }, [item.taskType, item.keyboardType])
 
     const handleChangeTask = async () => {
-        if (isHomeWork) {
-            return console.log('changed from homework')
+        let newWord = word
+        const newVariants = variants?.map(variant => variant.right ? {...variant, word: newWord} : {...variant})
+        const newTask = {
+            id: item.id,
+            description: taskDescription,
+            taskType: itemType.constantName,
+            value: itemType.constantName === taskBank.MATCHING ? null : msg,
+            keyboardType: itemType.constantName === taskBank.MATCHING ? null : activeKeyboardType,
+            variants: itemType.constantName === taskBank.MATCHING ? matchingData : newVariants,
         }
-        const newTask = await TaskService.editTask(item, blockId)
-        console.log(newTask)
+        const editedTask = await TaskService.editTask(newTask, blockId, lessonId, isHomeWork, exe?.id)
+        console.log('changed task', newTask, 'in homework:', isHomeWork)
         setEdit(false)
     }
 
@@ -137,7 +148,7 @@ const LessonTaskWrapper = ({item, blockId, isHomeWork}) => {
     );
 
     return (
-        <div style={{width: 450}} draggable>
+        <div style={{width: 450}}>
             <Card className={`my-1 py-2 px-2 d-grid`}
                   style={{background: '#F7F7F7', width: 450}}>
                 <div>
@@ -169,7 +180,7 @@ const LessonTaskWrapper = ({item, blockId, isHomeWork}) => {
                                   handleInputChange={handleInputChange}
                         />
                         :
-                        <Matching/>
+                        <Matching matchingData={matchingData} setEdit={setEdit} setMatchingData={setMatchingData}/>
                     }
                 </div>
                 {itemType.constantName !== taskBank.MATCHING &&
@@ -198,7 +209,7 @@ const LessonTaskWrapper = ({item, blockId, isHomeWork}) => {
                         {/*</div>*/}
                     </div>
                 }
-                {edit && <Button onClick={handleChangeTask}  size={"sm"}  className={"py-1"}> Confirm </Button>}
+                {edit && <Button onClick={handleChangeTask} size={"sm"} className={"py-1"}> Confirm </Button>}
             </Card>
         </div>
     );

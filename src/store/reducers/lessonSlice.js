@@ -1,5 +1,4 @@
 import {createSlice} from '@reduxjs/toolkit'
-import board from "../../components/Lesson/Homework/Board";
 
 export const lessonSlice = createSlice({
     name: 'lesson',
@@ -22,7 +21,7 @@ export const lessonSlice = createSlice({
         setLesson: (state, action) => {
             return {
                 ...state,
-                lessonId: action.payload.lessonId,
+                lessonId: +action.payload.lessonId,
                 lessonTitle: action.payload.lessonTitle,
                 board: [...action.payload.board.reverse()],
                 lessonName: action.payload.lessonName,

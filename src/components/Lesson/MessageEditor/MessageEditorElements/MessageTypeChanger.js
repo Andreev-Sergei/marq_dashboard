@@ -36,6 +36,16 @@ const MessageTypeChanger = ({msgType, changeMessageType}) => {
                 checked={(msgType == msgTypes.GIF)}
                 label={`Gif`}
             />
+            <Form.Check
+                onChange={changeMessageType}
+                type={"radio"}
+                className={"ms-1"}
+                name={`inline`}
+                value={msgTypes.IMAGE}
+                id={msgTypes.IMAGE}
+                checked={(msgType == msgTypes.IMAGE)}
+                label={`Image`}
+            />
         </Form>
     );
 };

@@ -18,10 +18,8 @@ import {Link} from "react-router-dom";
 import {LESSON_ROUTE} from "../../routes";
 import {setError} from "../../store/reducers/userSlice";
 import {useDispatch} from "react-redux";
-import {fetchShortLessonItem} from "../../api/lesson";
 import {useForm} from "react-hook-form";
 import {editLesson} from "../../store/reducers/courseSlice";
-import LessonService from "../../services/LessonServices/LessonService";
 import CourseService from "../../services/CourseService";
 
 const ShortEditLesson = ({activeLesson}) => {

@@ -1,7 +1,9 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Button, Card, Col, Form, FormCheck, Row, Spinner} from "react-bootstrap";
 import {useForm} from "react-hook-form";
 import {Trash} from "react-bootstrap-icons";
+import {useSelector} from "react-redux";
+import $api from "../../../api";
 
 function TrainingItem(props: { handleChangeInProduction: any, word: string, id: number, inProduction: any, translation: string, handleRemoveItem: (id) => any }) {
     return <Card style={{background: "#F7F7F7"}} className={"mb-3"}>
@@ -21,98 +23,66 @@ function TrainingItem(props: { handleChangeInProduction: any, word: string, id: 
                 </span>
             </Col>
             <Col md={1} className={"d-flex  py-3 justify-content-center align-items-center"}>
-                <Trash className={"mx-2"} role={"button"} onClick={()=> props.handleRemoveItem(props.id)}/>
+                <Trash className={"mx-2"} role={"button"} onClick={() => props.handleRemoveItem(props.id)}/>
             </Col>
         </Row>
     </Card>;
 }
 
 const Trainer = () => {
+    const {lessonId} = useSelector(state => state.lesson)
     const {register, handleSubmit, reset, formState: {errors}} = useForm()
     const [loadingChanges, setLoadingChanges] = useState(false)
-    const [trainingItems, setTrainingItems] = useState([
-        {
-            id: 1,
-            word: 'dog',
-            translation: 'Собака',
-            inProduction: true
-        }, {
-            id: 2,
-            word: 'cat',
-            translation: 'кошка',
-            inProduction: false
-        }, {
-            id: 3,
-            word: 'cow',
-            translation: 'корова',
-            inProduction: true
-        }, {
-            id: 12,
-            word: 'dog',
-            translation: 'Собака',
-            inProduction: true
-        }, {
-            id: 22,
-            word: 'cat',
-            translation: 'кошка',
-            inProduction: false
-        }, {
-            id: 32,
-            word: 'cow',
-            translation: 'корова',
-            inProduction: true
-        }, {
-            id: 213,
-            word: 'dog',
-            translation: 'Собака',
-            inProduction: true
-        }, {
-            id: 124412,
-            word: 'cat',
-            translation: 'кошка',
-            inProduction: false
-        }, {
-            id: 124,
-            word: 'cow',
-            translation: 'корова',
-            inProduction: true
-        }, {
-            id: 124124,
-            word: 'dog',
-            translation: 'Собака',
-            inProduction: true
-        }, {
-            id: 4343,
-            word: 'cat',
-            translation: 'кошка',
-            inProduction: false
-        }, {
-            id: 555,
-            word: 'cow',
-            translation: 'корова',
-            inProduction: true
-        },
-    ])
-    const onSubmit = (data) => {
-        const newTrainingItem = {
-            id: Date.now(),
-            inProduction: false,
-            word: data.word,
-            translation: data.translation
+    const [trainingItems, setTrainingItems] = useState([])
+
+    useEffect(async () => {
+        try {
+            const {data: board} = await $api.get('/dashboard/trainer', {params: {lessonId}})
+            await setTrainingItems(board)
+        } catch (e) {
+
         }
-        setTrainingItems([newTrainingItem, ...trainingItems])
-        reset()
+    }, [])
+
+
+    const onSubmit = async (data) => {
+        try {
+            setLoadingChanges(true)
+            const newTrainingItem = {
+                inProduction: false,
+                word: data.word,
+                translation: data.translation
+            }
+            const {data: task} = await $api.post('/dashboard/trainer', newTrainingItem, {params: {lessonId}})
+            setTrainingItems([task, ...trainingItems])
+            reset()
+            setLoadingChanges(false)
+        } catch (e) {
+
+        }
+
     }
     const handleRemoveItem = (id) => {
-        setTrainingItems([...trainingItems.filter(item => item.id !== id )])
+        setTrainingItems([...trainingItems.filter(item => item.id !== id)])
     }
-    const handleChangeInProduction = (id) => {
-        setTrainingItems([...trainingItems.map(item => {
-            return (item.id === id) ? {
-                ...item,
-                inProduction: !item.inProduction
-            } : item
-        })])
+    const handleChangeInProduction = async (id) => {
+        try {
+            const element = trainingItems.find(e => e.id === id)
+
+            const {data} = await $api.patch('/dashboard/trainer', {
+                changeTo: !element.inProduction
+            }, {params: {lessonId, taskId: id}})
+
+            setTrainingItems([...trainingItems.map(item => {
+                return (item.id === id) ? {
+                    ...item,
+                    inProduction: data.changeTo
+                } : item
+            })])
+        } catch (e) {
+
+        }
+
     }
     return (
         <>
@@ -158,7 +128,7 @@ const Trainer = () => {
                 </Col>
             </Row>
             <Card className={"p-4 mt-4"} style={{maxHeight: 520, overflowY: 'scroll'}}>
-                {trainingItems.map(({word, id, translation, inProduction}) => {
+                {trainingItems?.map(({word, id, translation, inProduction}) => {
                     return (
                         <TrainingItem key={id}
                                       word={word}

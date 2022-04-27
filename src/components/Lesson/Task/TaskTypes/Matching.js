@@ -1,15 +1,14 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {Form} from "react-bootstrap";
 import {useForm} from "react-hook-form";
 
-const Matching = ({Confirm, initialMatchingData}) => {
-    const {register, handleSubmit, getValues, formState: {errors}} = useForm()
-    const [matchingData, setMatchingData] = useState(initialMatchingData || null)
+const Matching = ({matchingData, setMatchingData, setEdit}) => {
+    const {register, getValues} = useForm()
 
     const handleChange = () => {
         setMatchingData(getValues())
+        setEdit(true)
     }
-
     return (
         <form onChange={handleChange} className={"px-0 py-0 "}>
             <Form.Group

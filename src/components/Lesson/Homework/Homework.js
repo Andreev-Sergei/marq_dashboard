@@ -1,10 +1,10 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {Card, Col, Nav, Row, Tab, TabContainer} from "react-bootstrap";
-import {getKeyboardArrayByTaskType, keyboardTypesForTask, taskBank} from "../../../helpers/constants";
+import React, {useEffect, useState} from 'react';
+import {Card, Col, Nav, Row, Tab} from "react-bootstrap";
 import ExerciseSettings from "./ExerciseSettings";
 import Board from "./Board";
 import {useDispatch, useSelector} from "react-redux";
 import {setExercise} from "../../../store/reducers/HomeworkSlice";
+import $api from "../../../api";
 
 const Exercises = [
     'Exercise #1',
@@ -15,23 +15,19 @@ const Exercises = [
 
 const Homework = () => {
     const [ex, setEx] = useState(1)
-    const {exercise: exe} = useSelector(state => state.homework)
+    const {lessonId} = useSelector(state => state.lesson)
     const dispatch = useDispatch()
 
 
     useEffect(() => {
         const fetchExe = async () => {
             try {
-                const e = (ex !== 3) ? {
-                    id: ex,
-                    name: 'Перевод ' + ex,
-                    section: 'Лексика',
-                    description: 'Помнишь, как это будет по-испански?',
-                    typeOfTask: taskBank.MATCHING,
-                    keyboardType: keyboardTypesForTask.find(x => x.id === 5).id
-                } : 'NEW'
-
-                dispatch(setExercise(e))
+                if (lessonId) {
+                    const {data: serverExercise} = await $api.get(`/dashboard/homework`, {
+                        params: {exerciseId: ex, lessonId}
+                    })
+                    dispatch(setExercise(serverExercise))
+                }
             } catch (e) {
                 console.log(e)
             }
@@ -39,7 +35,7 @@ const Homework = () => {
         fetchExe()
         return () => {
         }
-    }, [ex])
+    }, [ex, lessonId])
 
     return (
         <Tab.Container id="left-tabs-example">
@@ -48,7 +44,7 @@ const Homework = () => {
                     <Card className={'py-1 px-3'} style={{height: 250}}>
                         <p className={"mb-2 mt-2"}>Exercises list</p>
                         <Nav variant="pills" className="flex-column">
-                            {Exercises.map((e, index) =>
+                            {Exercises?.map((e, index) =>
                                 <Nav.Item key={index + 1} className={"mt-2"}>
                                     <Nav.Link role={"button"}
                                               active={index + 1 === ex}

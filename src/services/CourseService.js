@@ -12,17 +12,18 @@ export default class CourseService {
         return response
     }
     static fetchCourse = async (courseId) => {
-        const response = await $api.get(SERVER_URL + `/course-list/${courseId}`)
+        const response = await $api.get(SERVER_URL + `/course-list/:${courseId}`)
         return response
     }
     static fetchLangItem = async (langId) => {
-        const response = await $api.get(SERVER_URL + `/lang/${langId}`)
+        const response = await $api.get(SERVER_URL + `/lang`, {params: {langId}})
         return response
     }
     static fetchShortLesson = async (lessonId) => {
-        const response = await $api.get(SERVER_URL + `/lesson/${lessonId}`, {
+        const response = await $api.get(SERVER_URL + `/lesson`, {
             params: {
-                short: true
+                short: true,
+                lessonId
             }
         })
         return response
